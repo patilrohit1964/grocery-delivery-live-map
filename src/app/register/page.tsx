@@ -1,12 +1,11 @@
+"use client";
+import RegisterForm from "@/components/RegisterForm";
 import Welcome from "@/components/Welcome";
-import React from "react";
+import React, { useState } from "react";
 
 const Register = () => {
-  return (
-    <div>
-      <Welcome />
-    </div>
-  );
+  const [step, setStep] = useState(1);
+  return <div>{step == 1 ? <Welcome setStep={setStep} /> : <RegisterForm setStep={setStep} />}</div>;
 };
 
 export default Register;

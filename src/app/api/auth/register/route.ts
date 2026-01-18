@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
           message: "Email already exists",
           success: false,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
     const hashedPass = await bcrypt.hash(password, 10);
@@ -23,10 +23,16 @@ export async function POST(req: NextRequest) {
       {
         success: true,
         message: "Account created successfully",
+        data: {
+          id: newUser?._id,
+          name: newUser?.name,
+          email: newUser?.email,
+          role: newUser?.role,
+        },
       },
       {
         status: 201,
-      }
+      },
     );
   } catch (error) {
     console.log(error);
