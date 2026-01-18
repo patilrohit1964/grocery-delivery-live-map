@@ -3,8 +3,9 @@ interface IUser {
   _id?: mongoose.Types.ObjectId;
   name: string;
   email: string;
-  password: string;
+  password?: string;
   mobile?: string;
+  image?: string;
   role: "user" | "deliverBoy" | "admin";
 }
 const userSchema = new mongoose.Schema<IUser>(
@@ -20,9 +21,13 @@ const userSchema = new mongoose.Schema<IUser>(
     },
     password: {
       type: String,
-      required: true,
+      // required: true,
     },
     mobile: {
+      type: String,
+      // required:true
+    },
+    image: {
       type: String,
       // required:true
     },

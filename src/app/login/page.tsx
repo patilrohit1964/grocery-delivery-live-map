@@ -1,48 +1,26 @@
 "use client";
 import googleImg from "@/assests/download.jpg";
-import axios from "axios";
-import { signIn, useSession } from "next-auth/react";
-import {
-  ArrowLeft,
-  Eye,
-  EyeClosed,
-  Leaf,
-  Lock,
-  LogIn,
-  Mail,
-  User,
-} from "lucide-react";
+import { Eye, EyeClosed, Leaf, Lock, LogIn, Mail } from "lucide-react";
 import { motion } from "motion/react";
+import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { toast, Zoom } from "react-toastify";
-type propType = {
-  setStep: (s: number) => void;
-};
-const RegisterForm = ({ setStep }: propType) => {
+
+const Login = () => {
   const [form, setForm] = useState({
-    name: "",
     email: "",
     password: "",
   });
   const [showPass, setShowPass] = useState(false);
-  const handleRegister = async (e: FormEvent) => {
+  const session = useSession();
+  const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      const registerRes = await axios.post("/api/auth/register", form);
-      toast(registerRes?.data?.message || "Account created", {
-        position: "top-right",
-        autoClose: 5000,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "dark",
-        transition: Zoom,
-      });
-      setForm({
-        name: "",
-        email: "",
-        password: "",
+      await signIn("credentials", {
+        email: form?.email,
+        password: form.password,
       });
     } catch (error) {
       toast(error?.response?.data?.message || "Account created", {
@@ -60,13 +38,6 @@ const RegisterForm = ({ setStep }: propType) => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-6 py-10 bg-white relative">
-      <div
-        className="absolute top-6 left-6 flex items-center gap-2 text-green-700 hover:text-green-800 transition-colors cursor-pointer"
-        onClick={() => setStep(1)}
-      >
-        <ArrowLeft className="w-5 h-5" />
-        <span className="font-medium">Back</span>
-      </div>
       <motion.h1
         initial={{
           y: -10,
@@ -76,13 +47,13 @@ const RegisterForm = ({ setStep }: propType) => {
         transition={{ duration: 0.6 }}
         className="text-4xl font-extrabold text-green-700 mb-2"
       >
-        Create Account
+        Welcome Back
       </motion.h1>
       <p className="text-gray-600 mb-8 flex items-center gap-2">
-        Join Snapcart today <Leaf className="w-5 h-5 text-green-600" />
+        Login Snapcart <Leaf className="w-5 h-5 text-green-600" />
       </p>
       <motion.form
-        onSubmit={handleRegister}
+        onSubmit={handleLogin}
         initial={{
           opacity: 0,
         }}
@@ -90,16 +61,6 @@ const RegisterForm = ({ setStep }: propType) => {
         transition={{ duration: 0.6 }}
         className="flex flex-col gap-5 w-full max-w-sm"
       >
-        <div className="relative">
-          <User className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
-          <input
-            type="text"
-            placeholder="enter your name"
-            className="w-full border border-gray-300 rounded-xl py-3 pl-10 pr-4 text-gray-800 focus:ring-2 focus:ring-green-500 focus:outline-none"
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            value={form.name}
-          />
-        </div>
         <div className="relative">
           <Mail className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
           <input
@@ -132,14 +93,13 @@ const RegisterForm = ({ setStep }: propType) => {
           )}
         </div>
         {(() => {
-          const formValidation =
-            form.name !== "" && form.email !== "" && form.password !== "";
+          const formValidation = form.email !== "" && form.password !== "";
           return (
             <button
               disabled={!formValidation}
               className={`w-full font-semibold py-3 rounded-2xl transition-all duration-200 shadow-md inline-flex items-center justify-center gap-2 ${formValidation ? "bg-green-600 hover:bg-green-700 text-white cursor-pointer" : "bg-gray-300 text-gray-500 cursor-not-allowed"}`}
             >
-              Register
+              Login
             </button>
           );
         })()}
@@ -149,24 +109,25 @@ const RegisterForm = ({ setStep }: propType) => {
           OR
           <span className="flex-1 h-px bg-gray-200"></span>
         </div>
-        <button
-          className="w-full flex items-center justify-center gap-3 border border-gray-300 hover:bg-gray-200 py-3 rounded-xl text-gray-700 font-medium transition-all duration-200 cursor-pointer"
-          onClick={() =>
-            signIn("google")
-          }
-        >
-          <Image src={googleImg} width={20} height={20} alt="google image" />
+        <button className="w-full flex items-center justify-center gap-3 border border-gray-300 hover:bg-gray-200 py-3 rounded-xl text-gray-700 font-medium transition-all duration-200 cursor-pointer">
+          <Image
+            src={googleImg}
+            width={20}
+            height={20}
+            alt="google image"
+            onClick={() => signIn("google")}
+          />
           continue with Google
         </button>
       </motion.form>
-      <Link href={"/login"}>
+      <Link href={"/register"}>
         <p className="cursor-pointer text-gray-600 mt-6 text-sm flex items-center gap-1">
-          Already have an account ? <LogIn className="w-4 h-4" />{" "}
-          <span className="text-green-500 hover:underline ">Sign In</span>
+          Don't have an account ? <LogIn className="w-4 h-4" />{" "}
+          <span className="text-green-500 hover:underline ">Sign Up</span>
         </p>
       </Link>
     </div>
   );
 };
 
-export default RegisterForm;
+export default Login;
