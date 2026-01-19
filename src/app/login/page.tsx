@@ -21,6 +21,7 @@ const Login = () => {
       await signIn("credentials", {
         email: form?.email,
         password: form.password,
+        callbackUrl:"/"
       });
     } catch (error) {
       toast(error?.response?.data?.message || "Account created", {
@@ -35,7 +36,7 @@ const Login = () => {
       console.log(error);
     }
   };
-
+console.log(session,'sess')
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-6 py-10 bg-white relative">
       <motion.h1
@@ -109,16 +110,15 @@ const Login = () => {
           OR
           <span className="flex-1 h-px bg-gray-200"></span>
         </div>
-        <button className="w-full flex items-center justify-center gap-3 border border-gray-300 hover:bg-gray-200 py-3 rounded-xl text-gray-700 font-medium transition-all duration-200 cursor-pointer">
+        <div className="w-full flex items-center justify-center gap-3 border border-gray-300 hover:bg-gray-200 py-3 rounded-xl text-gray-700 font-medium transition-all duration-200 cursor-pointer" onClick={() => signIn("google",{callbackUrl:'/'})}>
           <Image
             src={googleImg}
             width={20}
             height={20}
             alt="google image"
-            onClick={() => signIn("google")}
           />
-          continue with Google
-        </button>
+          Continue with Google
+        </div>
       </motion.form>
       <Link href={"/register"}>
         <p className="cursor-pointer text-gray-600 mt-6 text-sm flex items-center gap-1">

@@ -1,7 +1,6 @@
 "use client";
 import googleImg from "@/assests/download.jpg";
 import axios from "axios";
-import { signIn, useSession } from "next-auth/react";
 import {
   ArrowLeft,
   Eye,
@@ -13,8 +12,10 @@ import {
   User,
 } from "lucide-react";
 import { motion } from "motion/react";
+import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { toast, Zoom } from "react-toastify";
 type propType = {
@@ -27,6 +28,7 @@ const RegisterForm = ({ setStep }: propType) => {
     password: "",
   });
   const [showPass, setShowPass] = useState(false);
+  const router = useRouter();
   const handleRegister = async (e: FormEvent) => {
     e.preventDefault();
     try {
@@ -39,6 +41,7 @@ const RegisterForm = ({ setStep }: propType) => {
         theme: "dark",
         transition: Zoom,
       });
+      router.push("/login");
       setForm({
         name: "",
         email: "",
@@ -151,12 +154,10 @@ const RegisterForm = ({ setStep }: propType) => {
         </div>
         <button
           className="w-full flex items-center justify-center gap-3 border border-gray-300 hover:bg-gray-200 py-3 rounded-xl text-gray-700 font-medium transition-all duration-200 cursor-pointer"
-          onClick={() =>
-            signIn("google")
-          }
+          onClick={() => signIn("google", { callbackUrl: "/" })}
         >
           <Image src={googleImg} width={20} height={20} alt="google image" />
-          continue with Google
+          Continue with Google
         </button>
       </motion.form>
       <Link href={"/login"}>
