@@ -13,9 +13,28 @@ const EditRoleMobile = () => {
     { id: "user", label: "User", icon: User },
     { id: "deliveryBoy", label: "Delivery Boy", icon: Bike },
   ]);
-  const [selectedRole, setSelectedRole] = useState<String>("");
+  const [selectedRole, setSelectedRole] = useState<string>("");
+  const [mobile, setMobile] = useState("");
+  const [mobileError, setMobileError] = useState("");
+
+  const handleMobileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, ""); // only digits
+
+    if (value.length > 10) return; // stop typing after 10
+
+    setMobile(value);
+
+    if (value.length === 0) {
+      setMobileError("");
+    } else if (value.length < 10) {
+      setMobileError("Mobile number must be exactly 10 digits");
+    } else {
+      setMobileError("");
+    }
+  };
+
   return (
-    <div className="flex flex-col min-h-screen p-6 w-full bg-white">
+    <div className="flex flex-col items-center min-h-screen p-6 w-full bg-white">
       <motion.h1
         initial={{
           y: -20,
@@ -59,12 +78,32 @@ const EditRoleMobile = () => {
           Enter Your Mobile Number
         </label>
         <input
-          type="tel"
+          type="text"
           id="mobile"
-          className="w-64 md:w-80 px-4 py-3 rounded-xl border border-gray-400 focus:ring-2 focus:ring-green-500 focus:outline-none text-gray-800"
+          value={mobile}
+          onChange={handleMobileChange}
           placeholder="Enter Your Mobile No."
+          className={`w-64 md:w-80 px-4 py-3 rounded-xl border focus:outline-none text-gray-800 ${
+            mobileError
+              ? "border-red-500 focus:ring-red-500"
+              : "border-gray-400 focus:ring-green-500"
+          }`}
         />
+
+        {mobileError && (
+          <span className="text-red-500 text-sm mt-1">{mobileError}</span>
+        )}
       </motion.div>
+      <motion.button
+        disabled={!selectedRole || mobile.length !== 10}
+        className={`inline-flex items-center mt-3 gap-2 font-semibold py-3 px-8 rounded-2xl shadow-md transition-all ${
+          selectedRole && mobile.length === 10
+            ? "bg-green-600 hover:bg-green-700 text-white"
+            : "bg-gray-300 text-gray-500 cursor-not-allowed"
+        }`}
+      >
+        Next
+      </motion.button>
     </div>
   );
 };
