@@ -1,7 +1,10 @@
 "use client";
+import axios from "axios";
 import { Bike, type LucideIcon, User, UserCog } from "lucide-react";
 import { motion } from "motion/react";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 interface User {
   id: string;
   label: string;
@@ -13,10 +16,10 @@ const EditRoleMobile = () => {
     { id: "user", label: "User", icon: User },
     { id: "deliveryBoy", label: "Delivery Boy", icon: Bike },
   ]);
+  const router = useRouter();
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [mobile, setMobile] = useState("");
   const [mobileError, setMobileError] = useState("");
-
   const handleMobileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, ""); // only digits
 
@@ -33,6 +36,21 @@ const EditRoleMobile = () => {
     }
   };
 
+  const handleEditMobileRole = async () => {
+    try {
+      const mobileRoleRes = await axios.post("/api/user/edit-role-mobile", {
+        role: selectedRole,
+        mobile,
+      });
+      if (!mobileRoleRes?.data?.success) {
+        toast(mobileRoleRes?.data?.message);
+      }
+      toast(mobileRoleRes?.data?.message || "Details Update");
+      return router.push("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="flex flex-col items-center min-h-screen p-6 w-full bg-white">
       <motion.h1
@@ -83,7 +101,7 @@ const EditRoleMobile = () => {
           value={mobile}
           onChange={handleMobileChange}
           placeholder="Enter Your Mobile No."
-          className={`w-64 md:w-80 px-4 py-3 rounded-xl border focus:outline-none text-gray-800 ${
+          className={`w-64 md:w-80 px-4 py-3 rounded-xl border border-gray-400 focus:ring-2 focus:ring-green-500 focus:outline-none text-gray-800 ${
             mobileError
               ? "border-red-500 focus:ring-red-500"
               : "border-gray-400 focus:ring-green-500"
@@ -95,14 +113,15 @@ const EditRoleMobile = () => {
         )}
       </motion.div>
       <motion.button
+        onClick={handleEditMobileRole}
         disabled={!selectedRole || mobile.length !== 10}
-        className={`inline-flex items-center mt-3 gap-2 font-semibold py-3 px-8 rounded-2xl shadow-md transition-all ${
+        className={`inline-flex items-center mt-3 cursor-pointer gap-2 font-semibold py-3 px-8 rounded-2xl shadow-md transition-all ${
           selectedRole && mobile.length === 10
             ? "bg-green-600 hover:bg-green-700 text-white"
             : "bg-gray-300 text-gray-500 cursor-not-allowed"
         }`}
       >
-        Next
+        Go To Home
       </motion.button>
     </div>
   );

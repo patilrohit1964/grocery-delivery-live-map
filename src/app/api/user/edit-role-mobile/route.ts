@@ -7,10 +7,20 @@ export async function POST(req: NextRequest) {
   try {
     await connectDb();
     const { role, mobile } = await req.json();
+    if (!role || !mobile) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "role and mobile field is required",
+        },
+        { status: 400 },
+      );
+    }
     const session = await auth();
     const user = await User.findOneAndUpdate(
       { email: session?.user?.email },
       { role, mobile },
+      { new: true },
     );
     if (!user) {
       return NextResponse.json(
@@ -24,7 +34,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        message: "Details updated",
+        message: "Details update",
         data: user,
       },
       { status: 200 },
