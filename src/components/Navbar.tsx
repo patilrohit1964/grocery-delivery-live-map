@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 interface IUser {
   _id?: mongoose.Types.ObjectId;
   name: string;
@@ -18,6 +18,19 @@ interface IUser {
 const Navbar = ({ user }: { user: IUser }) => {
   const plainUser = JSON.parse(JSON.stringify(user));
   const [open, setOpen] = useState(false);
+  const profileDropDown = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        profileDropDown.current &&
+        !profileDropDown.current.contains(e.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   return (
     <div className="w-[95%] fixed top-4 left-1/2 -translate-x-1/2 bg-linear-to-r from-green-500 to-green-700 rounded-2xl shadow-lg shadow-black/30 flex justify-between items-center h-14 px-4 md:px-8 z-50">
       {/* logo ui */}
@@ -46,7 +59,7 @@ const Navbar = ({ user }: { user: IUser }) => {
             0
           </span>
         </Link>
-        <div className="relative">
+        <div className="relative" ref={profileDropDown}>
           {/* user */}
           <div
             className="bg-white rounded-full w-11 h-11 flex items-center justify-center overflow-hidden shadow-md hover:scale-105 transition-transform cursor-pointer"
