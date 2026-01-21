@@ -57,13 +57,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return true;
     },
     // this work on insert user data in token
-    jwt({ token, user }) {
+    jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.name = user.name;
         token.email = user.email;
         token.role = user.role;
         // next-auth by default take only this id, name, email for external method add use global like create file next-auth and define globally
+      }
+      if (trigger === "update") {
+        token.role = session.role;
       }
       return token;
     },

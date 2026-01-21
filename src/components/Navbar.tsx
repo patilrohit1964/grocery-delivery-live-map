@@ -1,7 +1,11 @@
 "use client";
 import {
+  Boxes,
+  ClipboardCheckIcon,
   LogOut,
+  Menu,
   Package,
+  PlusCircle,
   Search,
   ShoppingCartIcon,
   User,
@@ -13,6 +17,8 @@ import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+
 interface IUser {
   _id?: mongoose.Types.ObjectId;
   name: string;
@@ -23,9 +29,9 @@ interface IUser {
   role: "user" | "deliverBoy" | "admin";
 }
 const Navbar = ({ user }: { user: IUser }) => {
-  const plainUser = JSON.parse(JSON.stringify(user));
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const profileDropDown = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -41,6 +47,23 @@ const Navbar = ({ user }: { user: IUser }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+  // this createportal help us to insert element on direct dom this createportal don't have any parent they insert element direct on dom
+  const sidebar = menuOpen
+    ? createPortal(
+        <AnimatePresence>
+          <motion.div
+            initial={{ x: 100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            exit={{ x: 100, opacity: 0 }}
+            className="relative z-50 bg-white h-screen w-full"
+          >
+            <div></div>
+          </motion.div>
+        </AnimatePresence>,
+        document.body,
+      )
+    : null;
   return (
     <div className="w-[95%] fixed top-4 left-1/2 -translate-x-1/2 bg-linear-to-r from-green-500 to-green-700 rounded-2xl shadow-lg shadow-black/30 flex justify-between items-center h-14 px-4 md:px-8 z-50">
       {/* logo ui */}
@@ -50,42 +73,84 @@ const Navbar = ({ user }: { user: IUser }) => {
       >
         Snapcart
       </Link>
+
       {/* search ui */}
-      <form className="hidden md:flex items-center bg-white rounded-full w-1/2 px-4 py-2 max-w-lg shadow-md ">
-        <Search className="text-gray-500 w-5 h-5 mr-2" />
-        <input
-          type="text"
-          placeholder="Search Groceries..."
-          className="w-full outline-none text-gray-700 placeholder-gray-400"
-        />
-      </form>
+      {user?.role === "user" && (
+        <form className="hidden md:flex items-center bg-white rounded-full w-1/2 px-4 py-2 max-w-lg shadow-md ">
+          <Search className="text-gray-500 w-5 h-5 mr-2" />
+          <input
+            type="text"
+            placeholder="Search Groceries..."
+            className="w-full outline-none text-gray-700 placeholder-gray-400"
+          />
+        </form>
+      )}
 
       <div className="flex items-center gap-3 md:gap-6 relative">
-        <div
-          className="bg-white rounded-full w-11 h-11 flex items-center justify-center shadow-md hover:scale-105 transition-all md:hidden"
-          onClick={() => setSearchOpen((prev) => !prev)}
-        >
-          <Search className="w-6 h-6 text-green-600" />
-        </div>
-        <Link
-          href={"/cart"}
-          className="relative bg-white rounded-full w-11 h-11 flex items-center justify-center shadow-md hover:scale-105 transition"
-        >
-          <ShoppingCartIcon className="text-green-600 w-6 h-6" />
-          <span className="absolute top-0 right-2 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full font-semibold shadow">
-            0
-          </span>
-        </Link>
+        {user?.role === "user" && (
+          <>
+            <div
+              className="bg-white rounded-full w-11 h-11 flex items-center justify-center shadow-md hover:scale-105 transition-all md:hidden"
+              onClick={() => setSearchOpen((prev) => !prev)}
+            >
+              <Search className="w-6 h-6 text-green-600" />
+            </div>
+            <Link
+              href={"/cart"}
+              className="relative bg-white rounded-full w-11 h-11 flex items-center justify-center shadow-md hover:scale-105 transition"
+            >
+              <ShoppingCartIcon className="text-green-600 w-6 h-6" />
+              <span className="absolute top-0 right-2 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full font-semibold shadow">
+                0
+              </span>
+            </Link>
+          </>
+        )}
+        {/* admin ui */}
+        {user?.role === "admin" && (
+          <>
+            <div className="hidden md:flex items-center gap-4">
+              <Link
+                href={""}
+                className="flex items-center gap-2 bg-white text-green-700 font-semibold px-4 py-2 rounded-full hover:bg-green-100 transition-all"
+              >
+                <PlusCircle className="w-5 h-5" />
+                Add Grocery
+              </Link>
+              <Link
+                href={""}
+                className="flex items-center gap-2 bg-white text-green-700 font-semibold px-4 py-2 rounded-full hover:bg-green-100 transition-all"
+              >
+                <Boxes className="w-5 h-5" />
+                View Grocery
+              </Link>
+              <Link
+                href={""}
+                className="flex items-center gap-2 bg-white text-green-700 font-semibold px-4 py-2 rounded-full hover:bg-green-100 transition-all"
+              >
+                <ClipboardCheckIcon className="w-5 h-5" />
+                Manage Orders
+              </Link>
+            </div>
+            <div
+              onClick={() => setMenuOpen((prev) => !prev)}
+              className="md:hidden bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md"
+            >
+              <Menu className="w-6 h-6 text-green-600" />
+            </div>
+          </>
+        )}
+        {/* user profile ui */}
         <div className="relative" ref={profileDropDown}>
           {/* user */}
           <div
             className="bg-white rounded-full w-11 h-11 flex items-center justify-center overflow-hidden shadow-md hover:scale-105 transition-transform cursor-pointer"
             onClick={() => setOpen((prev) => !prev)}
-            title={plainUser?.name}
+            title={user?.name}
           >
-            {plainUser?.image ? (
+            {user?.image ? (
               <Image
-                src={plainUser?.image}
+                src={user?.image}
                 className="object-cover rounded-full"
                 alt="user"
                 fill
@@ -105,9 +170,9 @@ const Navbar = ({ user }: { user: IUser }) => {
               >
                 <div className="flex items-center gap-3 px-3 py-2 border-b border-gray-100">
                   <div className="w-10 h-10 relative rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
-                    {plainUser?.image ? (
+                    {user?.image ? (
                       <Image
-                        src={plainUser?.image}
+                        src={user?.image}
                         className="object-cover rounded-full"
                         alt="user"
                         fill
@@ -118,21 +183,23 @@ const Navbar = ({ user }: { user: IUser }) => {
                   </div>
                   <div>
                     <div className="text-gray-800 font-semibold capitalize">
-                      Name: {plainUser?.name}
+                      Name: {user?.name}
                     </div>
                     <div className="text-xs text-gray-500 capitalize">
-                      Role: {plainUser?.role}
+                      Role: {user?.role}
                     </div>
                   </div>
                 </div>
-                <Link
-                  href={""}
-                  className="flex items-center gap-2 px-3 py-3 hover:bg-green-50 rounded-lg text-gray-700 font-medium"
-                  onClick={() => setOpen(false)}
-                >
-                  <Package className="w-5 h-5 text-green-600" />
-                  My Orders
-                </Link>
+                {user?.role === "user" && (
+                  <Link
+                    href={""}
+                    className="flex items-center gap-2 px-3 py-3 hover:bg-green-50 rounded-lg text-gray-700 font-medium"
+                    onClick={() => setOpen(false)}
+                  >
+                    <Package className="w-5 h-5 text-green-600" />
+                    My Orders
+                  </Link>
+                )}
                 <button
                   className="flex items-center gap-2 w-full text-left px-3 py-3 hover:bg-green-50 rounded-lg text-gray-700 font-medium cursor-pointer"
                   onClick={() => {
@@ -163,7 +230,7 @@ const Navbar = ({ user }: { user: IUser }) => {
                     placeholder="Search groceries..."
                   />
                 </form>
-                <button onClick={()=>setSearchOpen(false)}>
+                <button onClick={() => setSearchOpen(false)}>
                   <X className="text-gray-500 w-5 h-5" />
                 </button>
               </motion.div>
@@ -171,6 +238,7 @@ const Navbar = ({ user }: { user: IUser }) => {
           </AnimatePresence>
         </div>
       </div>
+      {sidebar}
     </div>
   );
 };

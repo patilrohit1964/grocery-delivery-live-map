@@ -2,6 +2,7 @@
 import axios from "axios";
 import { Bike, type LucideIcon, User, UserCog } from "lucide-react";
 import { motion } from "motion/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
@@ -16,6 +17,7 @@ const EditRoleMobile = () => {
     { id: "user", label: "User", icon: User },
     { id: "deliveryBoy", label: "Delivery Boy", icon: Bike },
   ]);
+  const { update } = useSession();
   const router = useRouter();
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [mobile, setMobile] = useState("");
@@ -46,6 +48,8 @@ const EditRoleMobile = () => {
         toast(mobileRoleRes?.data?.message);
       }
       toast(mobileRoleRes?.data?.message || "Details Update");
+      // when use update function for session update then use trigger in auth.ts jwt function always remember imp
+      await update(mobileRoleRes?.data?.data);
       return router.push("/");
     } catch (error) {
       console.log(error);

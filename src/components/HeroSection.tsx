@@ -38,6 +38,7 @@ const HeroSection = () => {
     },
   ];
   const [current, setCurrent] = useState(0);
+
   useEffect(() => {
     const slideInterval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % slides.length);
