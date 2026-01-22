@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
       { hostname: "images.unsplash.com" },
     ],
   },
+  devIndicators: {
+    position: "bottom-right",
+  },
 };
 
 export default nextConfig;

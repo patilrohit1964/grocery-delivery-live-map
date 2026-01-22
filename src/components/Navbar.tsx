@@ -100,7 +100,7 @@ const Navbar = ({ user }: { user: IUser }) => {
             {/* admin options buttons */}
             <div className="flex flex-col gap-3 font-medium mt-6">
               <Link
-                href={""}
+                href={"/admin/add-grocery"}
                 className="flex items-center gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all"
               >
                 <PlusCircle className="w-5 h-5" />
@@ -122,10 +122,13 @@ const Navbar = ({ user }: { user: IUser }) => {
               </Link>
             </div>
             <div className="my-5 border-t border-white/20"></div>
-            <div className="flex items-center gap-3 text-red-300 font-semibold mt-auto hover:bg-red-500/20 p-3 rounded-lg transition-all">
-              <LogOut />
+            <button
+              className="flex items-center gap-3 text-red-300 font-semibold mt-auto hover:bg-red-500/20 p-3 rounded-lg transition-all"
+              onClick={async () => signOut({ callbackUrl: "/" })}
+            >
+              <LogOut className="w-5 h-5 text-red-300" />
               Log Out
-            </div>
+            </button>
           </motion.div>
         </AnimatePresence>,
         document.body,
@@ -178,7 +181,7 @@ const Navbar = ({ user }: { user: IUser }) => {
           <>
             <div className="hidden md:flex items-center gap-4">
               <Link
-                href={""}
+                href={"/admin/add-grocery"}
                 className="flex items-center gap-2 bg-white text-green-700 font-semibold px-4 py-2 rounded-full hover:bg-green-100 transition-all"
               >
                 <PlusCircle className="w-5 h-5" />
