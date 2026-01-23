@@ -16,6 +16,7 @@ const groceryCategories = [
   "instant & packaged food",
   "baby & pet care",
 ];
+const units = ["kg", "g", "liter", "ml", "piece", "pack"];
 const AddGrocery = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-green-50 to-white py-16 relative">
@@ -56,8 +57,80 @@ const AddGrocery = () => {
             </label>
             <input
               type="text"
+              id="grocery-name"
               placeholder="eg:sweets,milk..."
-              className="w-full rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-400 border-gray-300 transition-all"
+              className="w-full rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-400 border border-gray-300 transition-all"
+            />
+          </div>
+          <div className="flex items-center gap-5">
+            <div>
+              <label
+                htmlFor="grocery-category"
+                className="block text-gray-700 font-medium mb-1"
+              >
+                Grocery Category <span className="text-red-500">*</span>
+              </label>
+              <select
+                className="w-full rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-400 border border-gray-300 transition-all"
+                id="grocery-category"
+              >
+                <option value={""} selected>
+                  Select Grocery Category
+                </option>
+                {groceryCategories.map((category, idx) => (
+                  <option key={idx} value={category} className="capitalize">
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label
+                htmlFor="grocery-unit"
+                className="block text-gray-700 font-medium mb-1"
+              >
+                Grocery Unit <span className="text-red-500">*</span>
+              </label>
+              <select
+                className="w-full rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-400 border border-gray-300 transition-all"
+                id="grocery-unit"
+              >
+                <option value={""} selected>
+                  Select Grocery Category
+                </option>
+                {units.map((unit, idx) => (
+                  <option key={idx} value={unit} className="capitalize">
+                    {unit}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div>
+            <label
+              htmlFor="grocery-price"
+              className="block text-gray-700 font-medium mb-1"
+            >
+              Grocery Price <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="number"
+              id="grocery-price"
+              placeholder="Enter Grocery Price"
+              className="w-full rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-400 border border-gray-300 transition-all"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="grocery-image"
+              className="block text-gray-700 font-medium mb-1"
+            >
+              Grocery Image <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="file"
+              id="grocery-image"
+              className="w-full rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-400 border border-gray-300 transition-all"
             />
           </div>
         </form>
