@@ -20,8 +20,8 @@ const AddGrocery = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-green-50 to-white py-16 relative">
       <motion.div
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 0.2 }}
       >
         <Link href={"/"}>
@@ -47,9 +47,19 @@ const AddGrocery = () => {
           </p>
         </div>
         <form className="flex flex-col gap-6 w-full">
-<div>
-    <label htmlFor="">Grocery Name</label>
-</div>
+          <div>
+            <label
+              htmlFor="grocery-name"
+              className="block text-gray-700 font-medium mb-1"
+            >
+              Grocery Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              placeholder="eg:sweets,milk..."
+              className="w-full rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-400 border-gray-300 transition-all"
+            />
+          </div>
         </form>
       </motion.div>
     </div>
