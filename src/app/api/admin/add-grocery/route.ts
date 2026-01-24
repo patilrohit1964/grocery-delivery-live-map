@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     const image = formData.get("image") as Blob | null;
     let imageUrl;
     if (image) {
-      imageUrl = await uploadOnCloudinary(image, session?.user?.id);
+      imageUrl = await uploadOnCloudinary(image);
     }
     const addGrocery = await Grocery.create({
       name,

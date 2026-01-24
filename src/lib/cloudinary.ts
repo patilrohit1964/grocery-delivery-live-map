@@ -5,10 +5,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const uploadOnCloudinary = async (
-  file: Blob,
-  userId: string | undefined,
-): Promise<string | null> => {
+const uploadOnCloudinary = async (file: Blob): Promise<string | null> => {
   if (!file) {
     return null;
   }
@@ -20,9 +17,6 @@ const uploadOnCloudinary = async (
         {
           resource_type: "auto",
           folder: "groceries-next",
-          public_id: `grocery_${userId}`,
-          overwrite: true,
-          invalidate: true,
         },
         (error, result) => {
           if (error) {
