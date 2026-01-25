@@ -2,6 +2,7 @@ import Provider from "@/Provider";
 import type { Metadata } from "next";
 import { ToastContainer } from "react-toastify";
 import "./globals.css";
+import StoreProvider from "@/redux/StoreProvider";
 
 export const metadata: Metadata = {
   title: "Snapcart",
@@ -16,7 +17,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="w-full min-h-screen bg-linear-to-b from-green-50 to white">
-        <Provider>{children}</Provider>
+        <Provider>
+          <StoreProvider>{children}</StoreProvider>
+        </Provider>
         <ToastContainer />
       </body>
     </html>

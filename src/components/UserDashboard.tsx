@@ -8,7 +8,6 @@ const UserDashboard = async () => {
   await connectDb();
   const groceryItems = await Grocery.find().lean();
   const plainGrocery = JSON.parse(JSON.stringify(groceryItems));
-  console.log(plainGrocery)
   return (
     <>
       <HeroSection />
