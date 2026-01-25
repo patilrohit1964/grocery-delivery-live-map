@@ -26,7 +26,7 @@ const groceryCategories = [
   "instant & packaged food",
   "baby & pet care",
 ];
-const units = ["kg", "g", "liter", "ml", "piece", "pack"];
+const units = ["kg", "g", "litre", "ml", "piece", "pack"];
 const AddGrocery = () => {
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState("");
