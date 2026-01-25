@@ -1,4 +1,5 @@
 "use client";
+import { RootState } from "@/redux/store";
 import {
   Boxes,
   ClipboardCheckIcon,
@@ -18,6 +19,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useSelector } from "react-redux";
 
 interface IUser {
   _id?: mongoose.Types.ObjectId;
@@ -30,6 +32,7 @@ interface IUser {
 }
 const Navbar = ({ user }: { user: IUser }) => {
   const [open, setOpen] = useState(false);
+  const { cartData } = useSelector((state: RootState) => state.cart);
   const [searchOpen, setSearchOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const profileDropDown = useRef<HTMLDivElement>(null);
@@ -171,7 +174,7 @@ const Navbar = ({ user }: { user: IUser }) => {
             >
               <ShoppingCartIcon className="text-green-600 w-6 h-6" />
               <span className="absolute top-0 right-2 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full font-semibold shadow">
-                0
+                {cartData.length || 0}
               </span>
             </Link>
           </>

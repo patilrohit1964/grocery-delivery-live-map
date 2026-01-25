@@ -1,8 +1,12 @@
 "use client";
+import userGetMe from "@/hooks/userGetMe";
+import { addToCart } from "@/redux/cartSlice";
+import { AppDispatch } from "@/redux/store";
 import { ShoppingCart } from "lucide-react";
 import mongoose from "mongoose";
 import { motion } from "motion/react";
 import Image from "next/image";
+import { useDispatch } from "react-redux";
 
 interface IGroceryItem {
   _id: mongoose.Types.ObjectId;
@@ -15,6 +19,10 @@ interface IGroceryItem {
   updatedAt?: Date;
 }
 const GroceryItems = ({ groceryItem }: { groceryItem: IGroceryItem }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const handleCartData = () => {
+    dispatch(addToCart({ ...groceryItem, quantity: 1 }));
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 50, scale: 0.9 }}
@@ -47,10 +55,11 @@ const GroceryItems = ({ groceryItem }: { groceryItem: IGroceryItem }) => {
           </span>
         </div>
         <motion.button
+          onClick={handleCartData}
           whileTap={{ scale: 0.96 }}
           className="mt-4 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white rounded-full py-2 text-sm font-medium transition-all cursor-pointer duration-300"
         >
-          <ShoppingCart className="w-5 h-5"/> Add To Cart
+          <ShoppingCart className="w-5 h-5" /> Add To Cart
         </motion.button>
       </div>
     </motion.div>

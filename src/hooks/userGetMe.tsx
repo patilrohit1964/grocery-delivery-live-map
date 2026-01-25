@@ -2,8 +2,9 @@
 import { AppDispatch } from "@/redux/store";
 import { setUserData } from "@/redux/userSlice";
 import axios from "axios";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 
 const userGetMe = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -11,7 +12,11 @@ const userGetMe = () => {
     const getMe = async () => {
       try {
         const result = await axios.get("/api/me");
-        dispatch(setUserData(result?.data));
+        console.log(result, "result");
+        if (!result?.data?.success) {
+          toast.error(result?.data?.message || "failed to get user details");
+        }
+        dispatch(setUserData(result?.data?.data));
       } catch (error) {
         console.log(error, "error");
       }
