@@ -1,12 +1,15 @@
 "use client";
-import userGetMe from "@/hooks/userGetMe";
-import { addToCart } from "@/redux/cartSlice";
-import { AppDispatch } from "@/redux/store";
-import { ShoppingCart } from "lucide-react";
+import {
+  addToCart,
+  decreaseQuantity,
+  increaseQuantity,
+} from "@/redux/cartSlice";
+import { AppDispatch, RootState } from "@/redux/store";
+import { Minus, Plus, ShoppingCart } from "lucide-react";
 import mongoose from "mongoose";
 import { motion } from "motion/react";
 import Image from "next/image";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 interface IGroceryItem {
   _id: mongoose.Types.ObjectId;
@@ -20,9 +23,11 @@ interface IGroceryItem {
 }
 const GroceryItems = ({ groceryItem }: { groceryItem: IGroceryItem }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const { cartData } = useSelector((state: RootState) => state.cart);
   const handleCartData = () => {
     dispatch(addToCart({ ...groceryItem, quantity: 1 }));
   };
+  const cartItemExist = cartData.find((cart) => cart._id === groceryItem._id);
   return (
     <motion.div
       initial={{ opacity: 0, y: 50, scale: 0.9 }}
@@ -54,13 +59,36 @@ const GroceryItems = ({ groceryItem }: { groceryItem: IGroceryItem }) => {
             ₹{groceryItem.price}
           </span>
         </div>
-        <motion.button
-          onClick={handleCartData}
-          whileTap={{ scale: 0.96 }}
-          className="mt-4 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white rounded-full py-2 text-sm font-medium transition-all cursor-pointer duration-300"
-        >
-          <ShoppingCart className="w-5 h-5" /> Add To Cart
-        </motion.button>
+        {cartItemExist ? (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="mt-4 flex items-center justify-between bg-green-50 border border-green-200 rounded-full py-2 px-4 gap-4"
+          >
+            <button
+              className="w-7 h-7 flex items-center justify-center rounded-full bg-green-100 hover:bg-green-200 transition-all cursor-pointer border border-gray-400"
+              onClick={() => dispatch(decreaseQuantity(groceryItem._id))}
+            >
+              <Minus size={16} className="text-green-700" />
+            </button>
+            <span>{cartItemExist.quantity}</span>
+            <button
+              className="w-7 h-7 flex items-center justify-center rounded-full bg-green-100 hover:bg-green-200 transition-all cursor-pointer border border-gray-400"
+              onClick={() => dispatch(increaseQuantity(groceryItem._id))}
+            >
+              <Plus size={16} className="text-green-700" />
+            </button>
+          </motion.div>
+        ) : (
+          <motion.button
+            onClick={handleCartData}
+            whileTap={{ scale: 0.96 }}
+            className="mt-4 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white rounded-full py-2 text-sm font-medium transition-all cursor-pointer duration-300"
+          >
+            <ShoppingCart className="w-5 h-5" /> Add To Cart
+          </motion.button>
+        )}
       </div>
     </motion.div>
   );
