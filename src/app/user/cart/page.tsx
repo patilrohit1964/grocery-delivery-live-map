@@ -1,7 +1,8 @@
 "use client";
 import { RootState } from "@/redux/store";
 import { ArrowLeft, ShoppingBasket } from "lucide-react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
+import Image from "next/image";
 import Link from "next/link";
 import { useSelector } from "react-redux";
 
@@ -37,7 +38,9 @@ const CartPage = () => {
             className="text-center py-20 bg-white rounded-2xl shadow-md"
           >
             <ShoppingBasket className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <p className="text-sm text-gray-500 mb-3">Your cart is empty. Add some groceries to continue Shopping</p>
+            <p className="text-sm text-gray-500 mb-3">
+              Your cart is empty. Add some groceries to continue Shopping
+            </p>
             <Link
               href={"/"}
               className="bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 transition-all inline-block font-medium"
@@ -45,7 +48,35 @@ const CartPage = () => {
               Continute Shopping
             </Link>
           </motion.div>
-        ) : null}
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div>
+              <AnimatePresence>
+                {cartData.map((cart, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="flex flex-col sm:flex-row items-center bg-white rounded-2xl shadow-md p-5 hover:shadow-xl transition-all duration-300 border border-gray-100"
+                  >
+                    <div className="relative w-28 h-28 sm:w-24 sm:h-24 md:w-28 md:h-28 shrink-0 rounded-xl overflow-hidden bg-gray-50">
+                      <Image
+                        src={cart.image}
+                        alt={cart.name}
+                        fill
+                        className="object-contain p-3 transition-transform duration-300 hover:scale-105"
+                      />
+                    </div>
+                    <div>
+                        <h3></h3>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          </div>
+        )}
       </motion.div>
     </div>
   );
