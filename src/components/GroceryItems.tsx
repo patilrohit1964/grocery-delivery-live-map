@@ -1,9 +1,8 @@
 "use client";
 import {
   addToCart,
-  calculateTotals,
   decreaseQuantity,
-  increaseQuantity,
+  increaseQuantity
 } from "@/redux/cartSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { Minus, Plus, ShoppingCart } from "lucide-react";
@@ -27,7 +26,6 @@ const GroceryItems = ({ groceryItem }: { groceryItem: IGroceryItem }) => {
   const { cartData } = useSelector((state: RootState) => state.cart);
   const handleCartData = () => {
     dispatch(addToCart({ ...groceryItem, quantity: 1 }));
-    dispatch(calculateTotals());
   };
   const cartItemExist = cartData.find((cart) => cart._id === groceryItem._id);
   return (

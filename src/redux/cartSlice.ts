@@ -40,6 +40,7 @@ const cartSlice = createSlice({
         return;
       }
       state.cartData?.push(action.payload);
+      cartSlice.caseReducers.calculateTotals(state);
     },
     increaseQuantity: (
       state,
@@ -52,6 +53,7 @@ const cartSlice = createSlice({
         if (state.cartData[existingItem].quantity >= 1) {
           state.cartData[existingItem].quantity += 1;
         }
+        cartSlice.caseReducers.calculateTotals(state);
       }
     },
     decreaseQuantity: (
@@ -69,18 +71,21 @@ const cartSlice = createSlice({
             (cart) => cart._id !== state.cartData[existingItem]._id,
           );
         }
+        cartSlice.caseReducers.calculateTotals(state);
       }
     },
     removeFromCart: (state, action: PayloadAction<mongoose.Types.ObjectId>) => {
       state.cartData = state.cartData.filter(
         (cart) => cart._id !== action.payload,
       );
+      cartSlice.caseReducers.calculateTotals(state);
     },
     calculateTotals: (state) => {
       state.subTotal = state.cartData.reduce(
         (acc, cart) => acc + Number(cart.price) * cart.quantity,
         0,
       );
+      state.deliveryFee = state.subTotal > 100 ? 0 : 40;
       state.finalTotal = state.subTotal + state.deliveryFee;
     },
   },

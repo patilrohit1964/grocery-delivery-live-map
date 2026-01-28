@@ -1,9 +1,8 @@
 "use client";
 import {
-  calculateTotals,
   decreaseQuantity,
   increaseQuantity,
-  removeFromCart,
+  removeFromCart
 } from "@/redux/cartSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { ArrowLeft, Minus, Plus, ShoppingBasket, Trash2 } from "lucide-react";
@@ -94,7 +93,6 @@ const CartPage = () => {
                         className="bg-white p-1.5 rounded-full hover:bg-green-100 transition-all border border-gray-200 cursor-pointer"
                         onClick={() => {
                           dispatch(decreaseQuantity(cart._id));
-                          dispatch(calculateTotals());
                         }}
                       >
                         <Minus size={16} className="text-green-700" />
@@ -104,7 +102,6 @@ const CartPage = () => {
                         className="bg-white p-1.5 rounded-full hover:bg-green-100 transition-all border border-gray-200 cursor-pointer"
                         onClick={() => {
                           dispatch(increaseQuantity(cart._id));
-                          dispatch(calculateTotals());
                         }}
                       >
                         <Plus size={16} className="text-green-700" />
@@ -114,7 +111,6 @@ const CartPage = () => {
                       className="sm:ml-4 mt-3 sm:mt-0 text-red-500 hover:text-red-700 transition-all cursor-pointer"
                       onClick={() => {
                         dispatch(removeFromCart(cart._id));
-                        dispatch(calculateTotals());
                       }}
                     >
                       <Trash2 size={18} />
@@ -128,21 +124,21 @@ const CartPage = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="bg-white rounded-2xl shadow-md p-5">
+              <div className="bg-white rounded-2xl shadow-md p-5 hover:shadow-xl transition-all duration-300">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">
                   Order Summary
                 </h3>
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal</span>
-                    <span className="font-medium">₹{subTotal}</span>
+                    <span className="font-semibold text-green-700">₹{subTotal}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Delivery Fee</span>
-                    <span className="font-medium">₹{deliveryFee}</span>
+                    <span className="font-semibold text-green-700">₹{deliveryFee}</span>
                   </div>
-                  <div className="flex justify-between border-t border-gray-200 pt-3">
-                    <span className="font-semibold text-gray-800">Total</span>
+                  <div className="flex justify-between border-t border-gray-200 pt-3 text-lg sm:text-xl">
+                    <span className="font-semibold">Total</span>
                     <span className="font-bold text-green-700">
                       ₹{finalTotal}
                     </span>
