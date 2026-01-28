@@ -76,13 +76,21 @@ const cartSlice = createSlice({
         (cart) => cart._id !== action.payload,
       );
     },
-    calculateTotals:(state)=>{
-      state.subTotal=state.cartData.reduce((acc,cart)=>acc+Number(cart.price)*cart.quantity,0)
-      state.finalTotal=state.subTotal+state.deliveryFee
-    }
+    calculateTotals: (state) => {
+      state.subTotal = state.cartData.reduce(
+        (acc, cart) => acc + Number(cart.price) * cart.quantity,
+        0,
+      );
+      state.finalTotal = state.subTotal + state.deliveryFee;
+    },
   },
 });
 
-export const { addToCart, increaseQuantity, decreaseQuantity, removeFromCart,calculateTotals } =
-  cartSlice.actions;
+export const {
+  addToCart,
+  increaseQuantity,
+  decreaseQuantity,
+  removeFromCart,
+  calculateTotals,
+} = cartSlice.actions;
 export default cartSlice.reducer;
