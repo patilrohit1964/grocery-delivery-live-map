@@ -2,7 +2,7 @@
 import {
   decreaseQuantity,
   increaseQuantity,
-  removeFromCart
+  removeFromCart,
 } from "@/redux/cartSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { ArrowLeft, Minus, Plus, ShoppingBasket, Trash2 } from "lucide-react";
@@ -131,11 +131,15 @@ const CartPage = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal</span>
-                    <span className="font-semibold text-green-700">₹{subTotal}</span>
+                    <span className="font-semibold text-green-700">
+                      ₹{subTotal}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Delivery Fee</span>
-                    <span className="font-semibold text-green-700">₹{deliveryFee}</span>
+                    <span className="font-semibold text-green-700">
+                      ₹{deliveryFee}
+                    </span>
                   </div>
                   <div className="flex justify-between border-t border-gray-200 pt-3 text-lg sm:text-xl">
                     <span className="font-semibold">Total</span>
@@ -144,17 +148,20 @@ const CartPage = () => {
                     </span>
                   </div>
                 </div>
-                <button
-                  // onClick={handleCheckout}
-                  disabled={cartData.length === 0}
-                  className={`w-full mt-4 py-3 px-4 rounded-full font-medium transition-all cursor-pointer ${
-                    cartData.length === 0
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-green-600 hover:bg-green-700 text-white"
-                  }`}
-                >
-                  Proceed to Checkout
-                </button>
+                <Link href={'/user/checkout'}>
+                  <motion.button
+                    whileTap={{ scale: 0.8 }}
+                    // onClick={handleCheckout}
+                    disabled={cartData.length === 0}
+                    className={`w-full mt-4 py-3 px-4 rounded-full font-medium transition-all cursor-pointer ${
+                      cartData.length === 0
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-green-600 hover:bg-green-700 text-white"
+                    }`}
+                  >
+                    Proceed to Checkout
+                  </motion.button>
+                </Link>
               </div>
             </motion.div>
           </div>
