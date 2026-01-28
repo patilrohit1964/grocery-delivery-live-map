@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import mongoose from "mongoose";
 interface IGROCERY {
-  _id?: mongoose.Types.ObjectId;
+  _id: mongoose.Types.ObjectId;
   name: string;
   category: string;
   price: string;
@@ -13,9 +13,15 @@ interface IGROCERY {
 }
 interface ICartSlice {
   cartData: IGROCERY[];
+  subTotal: number;
+  deliveryFee: number;
+  finalTotal: number;
 }
 const initialState: ICartSlice = {
   cartData: [],
+  subTotal: 0,
+  deliveryFee: 40,
+  finalTotal: 0,
 };
 const cartSlice = createSlice({
   name: "cart",
@@ -65,9 +71,18 @@ const cartSlice = createSlice({
         }
       }
     },
+    removeFromCart: (state, action: PayloadAction<mongoose.Types.ObjectId>) => {
+      state.cartData = state.cartData.filter(
+        (cart) => cart._id !== action.payload,
+      );
+    },
+    calculateTotals:(state)=>{
+      state.subTotal=state.cartData.reduce((acc,cart)=>acc+Number(cart.price)*cart.quantity,0)
+      state.finalTotal=state.subTotal+state.deliveryFee
+    }
   },
 });
 
-export const { addToCart, increaseQuantity, decreaseQuantity } =
+export const { addToCart, increaseQuantity, decreaseQuantity, removeFromCart,calculateTotals } =
   cartSlice.actions;
 export default cartSlice.reducer;

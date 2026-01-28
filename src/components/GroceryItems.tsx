@@ -1,6 +1,7 @@
 "use client";
 import {
   addToCart,
+  calculateTotals,
   decreaseQuantity,
   increaseQuantity,
 } from "@/redux/cartSlice";
@@ -26,6 +27,7 @@ const GroceryItems = ({ groceryItem }: { groceryItem: IGroceryItem }) => {
   const { cartData } = useSelector((state: RootState) => state.cart);
   const handleCartData = () => {
     dispatch(addToCart({ ...groceryItem, quantity: 1 }));
+    dispatch(calculateTotals());
   };
   const cartItemExist = cartData.find((cart) => cart._id === groceryItem._id);
   return (
