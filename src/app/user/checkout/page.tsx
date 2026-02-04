@@ -1,4 +1,5 @@
 "use client";
+import MapView from "@/components/MapView";
 import { RootState } from "@/redux/store";
 import {
   ArrowLeft,
@@ -180,6 +181,9 @@ const Checkout = () => {
               </button>
             </div>
             {/* map div */}
+            <div className="relative mt-6 h-82.5 rounded-xl overflow-hidden border border-gray-200 shadow-inner">
+              <MapView position={position} />
+            </div>
           </div>
         </motion.div>
       </div>
