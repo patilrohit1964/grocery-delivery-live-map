@@ -12,21 +12,39 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 const Checkout = () => {
   const [select, setSelect] = useState(1);
+  const [position, setPosition] = useState<[number, number] | null>(null);
   const { userData } = useSelector((state: RootState) => state.user);
-  console.log(userData, "data");
+  console.log(userData, "userdata");
   const [address, setAddress] = useState({
-    fullName: userData?.name,
-    mobile: userData?.mobile,
+    fullName: "",
+    mobile: "",
     city: "",
     state: "",
     pincode: "",
     fullAddress: "",
   });
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const { latitude, longitude } = pos.coords;
+        setPosition([latitude, longitude]);
+      });
+    }
+  }, []);
+  useEffect(() => {
+    if (userData) {
+      setAddress({
+        ...address,
+        fullName: userData.name || "",
+        mobile: userData.mobile || "",
+      });
+    }
+  }, [userData]);
   return (
     <div className="w-[95%] md:w-[80%] mx-auto py-10 relative">
       <Link href={"/"}>
@@ -161,6 +179,7 @@ const Checkout = () => {
                 Search
               </button>
             </div>
+            {/* map div */}
           </div>
         </motion.div>
       </div>
