@@ -1,6 +1,6 @@
 "use client";
-import MapView from "@/components/MapView";
 import { RootState } from "@/redux/store";
+import L,{ LatLngExpression } from "leaflet";
 import {
   ArrowLeft,
   Building,
@@ -14,8 +14,14 @@ import {
 import { motion } from "motion/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import { useSelector } from "react-redux";
 
+const marker=new L.Icon({
+  iconUrl:'https://cdn-icons-png.flaticon.com/128/684/684908.png',
+  iconSize:[30,30],
+  iconAnchor:[15,30]
+})
 const Checkout = () => {
   const [select, setSelect] = useState(1);
   const [position, setPosition] = useState<[number, number] | null>(null);
@@ -182,7 +188,24 @@ const Checkout = () => {
             </div>
             {/* map div */}
             <div className="relative mt-6 h-82.5 rounded-xl overflow-hidden border border-gray-200 shadow-inner">
-              <MapView position={position} />
+              {position && (
+                <MapContainer
+                  center={position as LatLngExpression}
+                  zoom={13}
+                  scrollWheelZoom={false}
+                  className="w-full h-full"
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <Marker position={position as LatLngExpression} icon={marker}>
+                    <Popup>
+                      You are here
+                    </Popup>
+                  </Marker>
+                </MapContainer>
+              )}
             </div>
           </div>
         </motion.div>
