@@ -2,10 +2,13 @@
 import { RootState } from "@/redux/store";
 import axios from "axios";
 import L, { LatLngExpression } from "leaflet";
+import { OpenStreetMapProvider } from "leaflet-geosearch";
 import {
   ArrowLeft,
   Building,
   Home,
+  Loader2,
+  LocateFixed,
   MapPin,
   Navigation,
   Phone,
@@ -17,14 +20,15 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import { useSelector } from "react-redux";
-
+const provider = new OpenStreetMapProvider();
 const marker = new L.Icon({
   iconUrl: "https://cdn-icons-png.flaticon.com/128/684/684908.png",
   iconSize: [30, 30],
   iconAnchor: [15, 30],
 }); //we can set icon as we want
 const Checkout = () => {
-  const [select, setSelect] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [mapSearchLoading, setMapSearchLoading] = useState<boolean>(false);
   const [position, setPosition] = useState<[number, number] | null>(null);
   const { userData } = useSelector((state: RootState) => state.user);
   console.log(userData, "userdata");
@@ -95,6 +99,7 @@ const Checkout = () => {
           city: res.data.address.city,
           state: res.data.address.state,
           pincode: res.data.address.postcode,
+          fullAddress: res.data.display_name,
         }));
       } catch (error) {
         console.log(error, "error while fetching address");
@@ -102,6 +107,32 @@ const Checkout = () => {
     };
     getLatLngFromAddress();
   }, [position]);
+
+  // for location searching
+  const handleSearchQuery = async () => {
+    setMapSearchLoading(true);
+    const provider = new OpenStreetMapProvider();
+    const results = await provider.search({ query: searchQuery });
+    console.log(results, "resutls");
+    if (results) {
+      setPosition([results[0].y, results[0].x]);
+    }
+    setMapSearchLoading(false);
+  };
+
+  // got to current location
+  const handleCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          setPosition([latitude, longitude]);
+        },
+        (err) => console.log(err, "location error"),
+        { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 },
+      );
+    }
+  };
   return (
     <div className="w-[95%] md:w-[80%] mx-auto py-10 relative">
       <Link href={"/"}>
@@ -227,13 +258,22 @@ const Checkout = () => {
               <input
                 className="flex-1 border rounded-lg p-3 text-sm focus:ring-2 focus:ring-green-500 outline-none"
                 placeholder="Search city or area"
-                value={address?.fullAddress}
-                onChange={(e) =>
-                  setAddress({ ...address, fullAddress: e.target.value })
-                }
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <button className="bg-green-600 text-white px-5 rounded-lg hover:bg-green-700 transition-all font-medium cursor-pointer">
-                Search
+              <button
+                className={`bg-green-600 text-white px-5 rounded-lg hover:bg-green-700 transition-all font-medium ${mapSearchLoading ? "cursor-not-allowed opacity-70" : "cursor-pointer"}`}
+                onClick={handleSearchQuery}
+                disabled={mapSearchLoading}
+              >
+                {mapSearchLoading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <Loader2 size={18} className="animate-spin" />{" "}
+                    <span>Loading...</span>
+                  </div>
+                ) : (
+                  "Search"
+                )}
               </button>
             </div>
             {/* map div */}
@@ -252,6 +292,13 @@ const Checkout = () => {
                   <DraggableMarker />
                 </MapContainer>
               )}
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                className="absolute bottom-4 right-4 bg-green-600 text-white shadow-lg rounded-full p-3 hover:bg-green-700 transition-all flex items-center justify-center z-999 cursor-pointer"
+                onClick={handleCurrentLocation}
+              >
+                <LocateFixed size={22} />
+              </motion.button>
             </div>
           </div>
         </motion.div>
