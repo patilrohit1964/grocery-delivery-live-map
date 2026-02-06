@@ -22,7 +22,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import { useSelector } from "react-redux";
-const provider = new OpenStreetMapProvider();
+
 const marker = new L.Icon({
   iconUrl: "https://cdn-icons-png.flaticon.com/128/684/684908.png",
   iconSize: [30, 30],
@@ -34,7 +34,9 @@ const Checkout = () => {
   const [mapSearchLoading, setMapSearchLoading] = useState<boolean>(false);
   const [position, setPosition] = useState<[number, number] | null>(null);
   const { userData } = useSelector((state: RootState) => state.user);
-  const { cartData } = useSelector((state: RootState) => state.cart);
+  const { subTotal, finalTotal, deliveryFee, cartData } = useSelector(
+    (state: RootState) => state.cart,
+  );
   console.log(userData, "userdata");
   const [address, setAddress] = useState({
     fullName: "",
@@ -97,7 +99,6 @@ const Checkout = () => {
         const res = await axios.get(
           `https://nominatim.openstreetmap.org/reverse?lat=${position[0]}&lon=${position[1]}&format=json`,
         );
-        console.log(res.data, "res");
         setAddress((prev) => ({
           ...prev,
           city: res.data.address.city,
@@ -137,6 +138,38 @@ const Checkout = () => {
       );
     }
   };
+
+  // handle cod order
+  const handleCod = async () => {
+    const orderData = {
+      userId: userData?._id,
+      address: {
+        ...address,
+        latitude: position?.[0],
+        longitude: position?.[1],
+      },
+      items: cartData.map((cart) => ({
+        grocery: cart._id,
+        name: cart.name,
+        price: cart.price,
+        unit: cart.unit,
+        image: cart.image,
+        quantity: cart.quantity,
+      })),
+      paymentMethod,
+      totalAmount: finalTotal,
+    };
+    console.log(orderData, "orderData");
+    return;
+    try {
+      const res = await axios.post("/api/user/order", orderData);
+    } catch (error) {
+      console.log(error, "error");
+    }
+  };
+
+  // handle online order
+  const handleOnline = async () => {};
   return (
     <div className="w-[95%] md:w-[80%] mx-auto py-10 relative">
       <Link href={"/"}>
@@ -335,17 +368,27 @@ const Checkout = () => {
           <div className="border-t pt-4 text-gray-700 space-y-2 text-sm sm:text-base">
             <div className="flex justify-between">
               <span className="font-semibold">Subtotal</span>
-              <span className="font-semibold text-gray-600">{}</span>
+              <span className="font-semibold text-gray-600">{subTotal}</span>
             </div>
             <div className="flex justify-between">
               <span className="font-semibold">Delivery Fee</span>
-              <span className="font-semibold text-gray-600">{}</span>
+              <span className="font-semibold text-gray-600">{deliveryFee}</span>
             </div>
             <div className="flex justify-between text-lg border-t pt-3">
               <span className="font-bold">Final Total</span>
-              <span className="font-semibold text-gray-600">{}</span>
+              <span className="font-semibold text-gray-600">{finalTotal}</span>
             </div>
-            <motion.button whileTap={{scale:0.95}} className="w-full mt-6 bg-green-600 text-white py-3 rounded-full hover:bg-green-700 transition-all font-semibold cursor-pointer">
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              className="w-full mt-6 bg-green-600 text-white py-3 rounded-full hover:bg-green-700 transition-all font-semibold cursor-pointer"
+              onClick={() => {
+                if (paymentMethod === "cod") {
+                  handleCod();
+                } else {
+                  handleOnline();
+                }
+              }}
+            >
               {paymentMethod === "cod" ? "Place Order" : "Pay & Place Order"}
             </motion.button>
           </div>
