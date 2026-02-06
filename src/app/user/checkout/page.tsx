@@ -142,7 +142,7 @@ const Checkout = () => {
   // handle cod order
   const handleCod = async () => {
     const orderData = {
-      userId: userData?._id,
+      userId: "696e1a4d23c7fab5a52eb368",
       address: {
         ...address,
         latitude: position?.[0],
@@ -159,10 +159,9 @@ const Checkout = () => {
       paymentMethod,
       totalAmount: finalTotal,
     };
-    console.log(orderData, "orderData");
-    return;
     try {
       const res = await axios.post("/api/user/order", orderData);
+      console.log(res.data, "dataF");
     } catch (error) {
       console.log(error, "error");
     }

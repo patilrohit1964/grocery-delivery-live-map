@@ -12,7 +12,7 @@ const userGetMe = () => {
     const getMe = async () => {
       try {
         const result = await axios.get("/api/me");
-        console.log(result, "result");
+        console.log(result.data, "result");
         if (!result?.data?.success) {
           toast.error(result?.data?.message || "failed to get user details");
         }

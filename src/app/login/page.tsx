@@ -1,8 +1,9 @@
 "use client";
 import googleImg from "@/assests/download.jpg";
+import userGetMe from "@/hooks/userGetMe";
 import { Eye, EyeClosed, Leaf, Lock, LogIn, Mail } from "lucide-react";
 import { motion } from "motion/react";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useState } from "react";
@@ -14,16 +15,15 @@ const Login = () => {
     password: "",
   });
   const [showPass, setShowPass] = useState(false);
-  const session = useSession();
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     try {
       await signIn("credentials", {
         email: form?.email,
         password: form.password,
-        callbackUrl:"/"
+        callbackUrl: "/",
       });
-    } catch (error) {
+    } catch (error: Error | any) {
       toast(error?.response?.data?.message || "Account created", {
         position: "top-right",
         autoClose: 5000,
@@ -109,13 +109,11 @@ const Login = () => {
           OR
           <span className="flex-1 h-px bg-gray-200"></span>
         </div>
-        <div className="w-full flex items-center justify-center gap-3 border border-gray-300 hover:bg-gray-200 py-3 rounded-xl text-gray-700 font-medium transition-all duration-200 cursor-pointer" onClick={() => signIn("google",{callbackUrl:'/'})}>
-          <Image
-            src={googleImg}
-            width={20}
-            height={20}
-            alt="google image"
-          />
+        <div
+          className="w-full flex items-center justify-center gap-3 border border-gray-300 hover:bg-gray-200 py-3 rounded-xl text-gray-700 font-medium transition-all duration-200 cursor-pointer"
+          onClick={() => signIn("google", { callbackUrl: "/" })}
+        >
+          <Image src={googleImg} width={20} height={20} alt="google image" />
           Continue with Google
         </div>
       </motion.form>
