@@ -22,6 +22,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const marker = new L.Icon({
   iconUrl: "https://cdn-icons-png.flaticon.com/128/684/684908.png",
@@ -162,6 +163,10 @@ const Checkout = () => {
     try {
       const res = await axios.post("/api/user/order", orderData);
       console.log(res.data, "dataF");
+      if (!res.data.success) {
+        return toast.error(res.data.message || "failed to place order");
+      }
+      toast.success(res.data.message || "order placed successfully");
     } catch (error) {
       console.log(error, "error");
     }
