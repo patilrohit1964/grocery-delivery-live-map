@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import { useSelector } from "react-redux";
@@ -30,6 +31,7 @@ const marker = new L.Icon({
   iconAnchor: [15, 30],
 }); //we can set icon as we want
 const Checkout = () => {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "online">("cod");
   const [mapSearchLoading, setMapSearchLoading] = useState<boolean>(false);
@@ -162,11 +164,11 @@ const Checkout = () => {
     };
     try {
       const res = await axios.post("/api/user/order", orderData);
-      console.log(res.data, "dataF");
       if (!res.data.success) {
         return toast.error(res.data.message || "failed to place order");
       }
       toast.success(res.data.message || "order placed successfully");
+      router.push("/user/order-success");
     } catch (error) {
       console.log(error, "error");
     }
