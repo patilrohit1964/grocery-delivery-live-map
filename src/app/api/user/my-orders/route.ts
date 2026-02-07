@@ -20,12 +20,19 @@ export async function GET() {
     return NextResponse.json(
       {
         message: "Orders Fetched",
-        success: false,
+        success: true,
         orders: getUserOrders,
       },
       { status: 200 },
     );
   } catch (error) {
     console.log(error, "while fetching my orders");
+    return NextResponse.json(
+      {
+        message: "error during fetching my orders",
+        success: false,
+      },
+      { status: 500 },
+    );
   }
 }
