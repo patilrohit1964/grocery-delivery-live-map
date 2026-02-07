@@ -1,4 +1,5 @@
 import { IOrder } from "@/models/order.model";
+import { CreditCard, MapPin, Truck } from "lucide-react";
 import { motion } from "motion/react";
 
 function UserOrderCard({ order }: { order: IOrder }) {
@@ -22,7 +23,7 @@ function UserOrderCard({ order }: { order: IOrder }) {
       className="bg-white rounded-2xl border border-gray-100 shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden"
     >
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-b border-gray-200 px-5 py-4 bg-linear-to-r from-green-50 to-white">
-        <div className="">
+        <div>
           <h3 className="text-lg font-semibold text-gray-800">
             Order:{" "}
             <span className="text-green-700 font-bold">
@@ -44,6 +45,23 @@ function UserOrderCard({ order }: { order: IOrder }) {
           >
             {order.status}
           </span>
+        </div>
+      </div>
+      <div className="p-5 space-y-4">
+        {order.paymentMethod === "cod" ? (
+          <div className="flex items-center gap-2 text-gray-700 text-sm">
+            <Truck size={16} className="text-green-600" />
+            Cash On Delivery
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 text-gray-700 text-sm">
+            <CreditCard size={16} className="text-green-600" />
+            Online Payment
+          </div>
+        )}
+        <div className="flex items-center gap-2 text-gray-700 text-sm">
+          <MapPin size={16} className="text-green-600" />
+          <span className="trucate">{order.address.fullAddress}</span>
         </div>
       </div>
     </motion.div>
