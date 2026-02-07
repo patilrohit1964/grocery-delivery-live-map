@@ -97,27 +97,43 @@ function UserOrderCard({ order }: { order: IOrder }) {
           >
             <div className="mt-3 space-y-3">
               {order.items.map((item) => (
-                <div className="flex items-center justify-between bg-gray-100 rounded-2xl p-2">
-                  <div className="flex items-center gap-4">
-                    <div className="relative h-24 w-24 rounded-xl overflow-hidden">
-                      <Image
-                        src={item.image}
-                        sizes="(max-width:768px) 100vw, 25vw"
-                        fill
-                        className="object-cover h-full w-full"
-                        alt="product image"
-                      />
-                    </div>
-                    <div className="font-semibold flex flex-col items-center">
-                      <h3 className="font-semibold text-lg">{item.name}</h3>
-                      <p className="text-sm text-gray-500">{item.quantity} x pack</p>
+                <div className="flex items-center justify-between bg-gray-50 rounded-xl px-3 py-2 hover:bg-gray-100 transition">
+                  <div className="flex items-center gap-3">
+                    <Image
+                      src={item.image}
+                      height={48}
+                      width={48}
+                      className="object-cover border border-gray-200 rounded-lg"
+                      alt="product image"
+                    />
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">
+                        {item.name} x pack
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {item.quantity} x {item.unit}
+                      </p>
                     </div>
                   </div>
-                  <h3 className="font-semibold text-lg">₹{item.price}</h3>
+                  <h3 className="font-semibold text-lg">
+                    ₹{Number(item.price) * item.quantity}
+                  </h3>
                 </div>
               ))}
             </div>
           </motion.div>
+        </div>
+        <div className="border-t pt-3 flex justify-between items-center text-sm font-semibold text-gray-800">
+          <div className="flex items-center gap-2 text-gray-700 text-sm">
+            <Truck size={16} className="text-green-600" />
+            Delivery:
+            <span className={`${getStatusColor(order.status)} border py-1 px-3 rounded-full font-semibold`}>
+              {order.status}
+            </span>
+          </div>
+          <div>
+            Total: <span className="text-green-600 font-bold">₹{order.totalAmount}</span>
+          </div>
         </div>
       </div>
     </motion.div>
