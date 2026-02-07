@@ -413,15 +413,15 @@ const Checkout = () => {
           <div className="border-t pt-4 text-gray-700 space-y-2 text-sm sm:text-base">
             <div className="flex justify-between">
               <span className="font-semibold">Subtotal</span>
-              <span className="font-semibold text-gray-600">{subTotal}</span>
+              <span className="font-semibold text-gray-600">₹{subTotal}</span>
             </div>
             <div className="flex justify-between">
               <span className="font-semibold">Delivery Fee</span>
-              <span className="font-semibold text-gray-600">{deliveryFee}</span>
+              <span className="font-semibold text-gray-600">₹{deliveryFee}</span>
             </div>
             <div className="flex justify-between text-lg border-t pt-3">
               <span className="font-bold">Final Total</span>
-              <span className="font-semibold text-gray-600">{finalTotal}</span>
+              <span className="font-semibold text-gray-600">₹{finalTotal}</span>
             </div>
             <motion.button
               whileTap={{ scale: 0.95 }}

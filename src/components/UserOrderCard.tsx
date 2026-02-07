@@ -1,20 +1,30 @@
 import { IOrder } from "@/models/order.model";
-import { CreditCard, MapPin, Truck } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  CreditCard,
+  MapPin,
+  Package,
+  Truck,
+} from "lucide-react";
 import { motion } from "motion/react";
+import Image from "next/image";
+import { useState } from "react";
 
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "pending":
+      return "bg-yellow-100 text-yellow-700 border-yellow-300";
+    case "delivered":
+      return "bg-green-100 text-green-700 border-green-300";
+    case "out of delivery":
+      return "bg-blue-100 text-blue-700 border-blue-300";
+    default:
+      return "bg-gray-100 text-gray-700 border-gray-300";
+  }
+};
 function UserOrderCard({ order }: { order: IOrder }) {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "bg-yellow-100 text-yellow-700 border-yellow-300";
-      case "delivered":
-        return "bg-green-100 text-green-700 border-green-300";
-      case "out of delivery":
-        return "bg-blue-100 text-blue-700 border-blue-300";
-      default:
-        return "bg-gray-100 text-gray-700 border-gray-300";
-    }
-  };
+  const [expanded, setExpanded] = useState(false);
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
@@ -62,6 +72,52 @@ function UserOrderCard({ order }: { order: IOrder }) {
         <div className="flex items-center gap-2 text-gray-700 text-sm">
           <MapPin size={16} className="text-green-600" />
           <span className="trucate">{order.address.fullAddress}</span>
+        </div>
+        <div className="border-t border-gray-400 pt-3">
+          <button
+            className="w-full flex justify-between items-center text-sm font-medium text-gray-700 hover:text-green-700 transition-all "
+            onClick={() => setExpanded((prev) => !prev)}
+          >
+            <span className="flex items-center gap-2 justify-center">
+              <Package size={16} className="text-green-600" />
+              {expanded
+                ? "Hide Order Items"
+                : `View ${order.items.length} Items`}
+            </span>
+            {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </button>
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{
+              height: expanded ? "auto" : 0,
+              opacity: expanded ? 1 : 0,
+            }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <div className="mt-3 space-y-3">
+              {order.items.map((item) => (
+                <div className="flex items-center justify-between bg-gray-100 rounded-2xl p-2">
+                  <div className="flex items-center gap-4">
+                    <div className="relative h-24 w-24 rounded-xl overflow-hidden">
+                      <Image
+                        src={item.image}
+                        sizes="(max-width:768px) 100vw, 25vw"
+                        fill
+                        className="object-cover h-full w-full"
+                        alt="product image"
+                      />
+                    </div>
+                    <div className="font-semibold flex flex-col items-center">
+                      <h3 className="font-semibold text-lg">{item.name}</h3>
+                      <p className="text-sm text-gray-500">{item.quantity} x pack</p>
+                    </div>
+                  </div>
+                  <h3 className="font-semibold text-lg">₹{item.price}</h3>
+                </div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </div>
     </motion.div>
