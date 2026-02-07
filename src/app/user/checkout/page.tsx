@@ -33,6 +33,7 @@ const marker = new L.Icon({
 const Checkout = () => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
+  const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "online">("cod");
   const [mapSearchLoading, setMapSearchLoading] = useState<boolean>(false);
   const [position, setPosition] = useState<[number, number] | null>(null);
@@ -144,6 +145,7 @@ const Checkout = () => {
 
   // handle cod order
   const handleCod = async () => {
+    setPaymentLoading(true);
     const orderData = {
       userId: "696e1a4d23c7fab5a52eb368",
       address: {
@@ -167,15 +169,53 @@ const Checkout = () => {
       if (!res.data.success) {
         return toast.error(res.data.message || "failed to place order");
       }
+      setPaymentLoading(false);
       toast.success(res.data.message || "order placed successfully");
       router.push("/user/order-success");
     } catch (error) {
       console.log(error, "error");
+      setPaymentLoading(false);
+    } finally {
+      setPaymentLoading(false);
     }
   };
 
   // handle online order
-  const handleOnline = async () => {};
+  const handleOnline = async () => {
+    setPaymentLoading(true);
+    const orderData = {
+      userId: "696e1a4d23c7fab5a52eb368",
+      address: {
+        ...address,
+        latitude: position?.[0],
+        longitude: position?.[1],
+      },
+      items: cartData.map((cart) => ({
+        grocery: cart._id,
+        name: cart.name,
+        price: cart.price,
+        unit: cart.unit,
+        image: cart.image,
+        quantity: cart.quantity,
+      })),
+      paymentMethod,
+      totalAmount: finalTotal,
+    };
+    try {
+      const res = await axios.post("/api/user/payment", orderData);
+      if (!res.data.success) {
+        return toast.error(res.data.message || "failed to place order");
+      }
+      setPaymentLoading(false);
+      toast.success(res.data.message || "order placed successfully");
+      router.push(res.data.url);
+    } catch (error) {
+      setPaymentLoading(false);
+      console.log(error, "stripe payment error");
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
   return (
     <div className="w-[95%] md:w-[80%] mx-auto py-10 relative">
       <Link href={"/"}>
@@ -386,7 +426,7 @@ const Checkout = () => {
             </div>
             <motion.button
               whileTap={{ scale: 0.95 }}
-              className="w-full mt-6 bg-green-600 text-white py-3 rounded-full hover:bg-green-700 transition-all font-semibold cursor-pointer"
+              className={`w-full mt-6 text-white py-3 rounded-full transition-all font-semibold ${paymentLoading ? "cursor-not-allowed bg-gray-500" : "cursor-pointer bg-green-600 hover:bg-green-700"}`}
               onClick={() => {
                 if (paymentMethod === "cod") {
                   handleCod();
@@ -394,8 +434,25 @@ const Checkout = () => {
                   handleOnline();
                 }
               }}
+              disabled={paymentLoading}
             >
-              {paymentMethod === "cod" ? "Place Order" : "Pay & Place Order"}
+              {paymentMethod === "cod" ? (
+                paymentLoading ? (
+                  <div className="flex items-center gap-2 justify-center">
+                    <Loader2 size={20} className="animate-spin" />
+                    Order Placeing...
+                  </div>
+                ) : (
+                  "Place Order"
+                )
+              ) : paymentLoading ? (
+                <div className="flex items-center gap-2 justify-center">
+                  <Loader2 size={20} className="animate-spin" />
+                  Payment Processing...
+                </div>
+              ) : (
+                "Pay & Place Order"
+              )}
             </motion.button>
           </div>
         </motion.div>
