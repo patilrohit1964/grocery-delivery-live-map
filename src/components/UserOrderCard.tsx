@@ -96,8 +96,11 @@ function UserOrderCard({ order }: { order: IOrder }) {
             className="overflow-hidden"
           >
             <div className="mt-3 space-y-3">
-              {order.items.map((item) => (
-                <div className="flex items-center justify-between bg-gray-50 rounded-xl px-3 py-2 hover:bg-gray-100 transition">
+              {order.items.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center justify-between bg-gray-50 rounded-xl px-3 py-2 hover:bg-gray-100 transition"
+                >
                   <div className="flex items-center gap-3">
                     <Image
                       src={item.image}
@@ -127,12 +130,17 @@ function UserOrderCard({ order }: { order: IOrder }) {
           <div className="flex items-center gap-2 text-gray-700 text-sm">
             <Truck size={16} className="text-green-600" />
             Delivery:
-            <span className={`${getStatusColor(order.status)} border py-1 px-3 rounded-full font-semibold`}>
+            <span
+              className={`${getStatusColor(order.status)} border py-1 px-3 rounded-full font-semibold`}
+            >
               {order.status}
             </span>
           </div>
           <div>
-            Total: <span className="text-green-600 font-bold">₹{order.totalAmount}</span>
+            Total:{" "}
+            <span className="text-green-600 font-bold">
+              ₹{order.totalAmount}
+            </span>
           </div>
         </div>
       </div>
