@@ -1,6 +1,6 @@
 import connectDb from "@/lib/db";
 import Order from "@/models/order.model";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -21,10 +21,14 @@ export async function POST(req: NextRequest) {
   if (event?.type === "checkout.session.completed") {
     const session = event.data.object;
     await connectDb();
-    const paymentUpdate = await Order.findByIdAndUpdate(
+    await Order.findByIdAndUpdate(
       session.metadata?.orderId,
       { isPaid: true },
       { new: true },
     );
   }
+  return NextResponse.json({
+    success: true,
+    messaage: "payment verified and received",
+  });
 }

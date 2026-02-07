@@ -207,7 +207,6 @@ const Checkout = () => {
         return toast.error(res.data.message || "failed to place order");
       }
       setPaymentLoading(false);
-      toast.success(res.data.message || "order placed successfully");
       router.push(res.data.url);
     } catch (error) {
       setPaymentLoading(false);
