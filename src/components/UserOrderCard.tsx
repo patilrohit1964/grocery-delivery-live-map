@@ -11,7 +11,7 @@ import { motion } from "motion/react";
 import Image from "next/image";
 import { useState } from "react";
 
-const getStatusColor = (status: string) => {
+export const getStatusColor = (status: string) => {
   switch (status) {
     case "pending":
       return "bg-yellow-100 text-yellow-700 border-yellow-300";
