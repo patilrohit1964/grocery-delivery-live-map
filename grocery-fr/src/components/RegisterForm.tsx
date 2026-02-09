@@ -1,0 +1,173 @@
+"use client";
+import googleImg from "@/assests/download.jpg";
+import axios from "axios";
+import {
+  ArrowLeft,
+  Eye,
+  EyeClosed,
+  Leaf,
+  Lock,
+  LogIn,
+  Mail,
+  User,
+} from "lucide-react";
+import { motion } from "motion/react";
+import { signIn } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { FormEvent, useState } from "react";
+import { toast, Zoom } from "react-toastify";
+type propType = {
+  setStep: (s: number) => void;
+};
+const RegisterForm = ({ setStep }: propType) => {
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [showPass, setShowPass] = useState(false);
+  const router = useRouter();
+  const handleRegister = async (e: FormEvent) => {
+    e.preventDefault();
+    try {
+      const registerRes = await axios.post("/api/auth/register", form);
+      toast(registerRes?.data?.message || "Account created", {
+        position: "top-right",
+        autoClose: 5000,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "dark",
+        transition: Zoom,
+      });
+      router.push("/login");
+      setForm({
+        name: "",
+        email: "",
+        password: "",
+      });
+    } catch (error) {
+      toast(error?.response?.data?.message || "Account created", {
+        position: "top-right",
+        autoClose: 5000,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "dark",
+        transition: Zoom,
+      });
+      console.log(error);
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen px-6 py-10 bg-white relative">
+      <div
+        className="absolute top-6 left-6 flex items-center gap-2 text-green-700 hover:text-green-800 transition-colors cursor-pointer"
+        onClick={() => setStep(1)}
+      >
+        <ArrowLeft className="w-5 h-5" />
+        <span className="font-medium">Back</span>
+      </div>
+      <motion.h1
+        initial={{
+          y: -10,
+          opacity: 0,
+        }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        className="text-4xl font-extrabold text-green-700 mb-2"
+      >
+        Create Account
+      </motion.h1>
+      <p className="text-gray-600 mb-8 flex items-center gap-2">
+        Join Snapcart today <Leaf className="w-5 h-5 text-green-600" />
+      </p>
+      <motion.form
+        onSubmit={handleRegister}
+        initial={{
+          opacity: 0,
+        }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        className="flex flex-col gap-5 w-full max-w-sm"
+      >
+        <div className="relative">
+          <User className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+          <input
+            type="text"
+            placeholder="enter your name"
+            className="w-full border border-gray-300 rounded-xl py-3 pl-10 pr-4 text-gray-800 focus:ring-2 focus:ring-green-500 focus:outline-none"
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            value={form.name}
+          />
+        </div>
+        <div className="relative">
+          <Mail className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+          <input
+            type="email"
+            placeholder="enter your email"
+            className="w-full border border-gray-300 rounded-xl py-3 pl-10 pr-4 text-gray-800 focus:ring-2 focus:ring-green-500 focus:outline-none"
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            value={form.email}
+          />
+        </div>
+        <div className="relative">
+          <Lock className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+          <input
+            type={showPass ? "text" : "password"}
+            placeholder="enter your password"
+            className="w-full border border-gray-300 rounded-xl py-3 pl-10 pr-4 text-gray-800 focus:ring-2 focus:ring-green-500 focus:outline-none"
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            value={form.password}
+          />
+          {showPass ? (
+            <Eye
+              className="absolute right-3 cursor-pointer top-3.5 w-5 h-5 text-gray-400"
+              onClick={() => setShowPass(!showPass)}
+            />
+          ) : (
+            <EyeClosed
+              className="absolute right-3 cursor-pointer top-3.5 w-5 h-5 text-gray-400"
+              onClick={() => setShowPass(!showPass)}
+            />
+          )}
+        </div>
+        {(() => {
+          const formValidation =
+            form.name !== "" && form.email !== "" && form.password !== "";
+          return (
+            <button
+              disabled={!formValidation}
+              className={`w-full font-semibold py-3 rounded-2xl transition-all duration-200 shadow-md inline-flex items-center justify-center gap-2 ${formValidation ? "bg-green-600 hover:bg-green-700 text-white cursor-pointer" : "bg-gray-300 text-gray-500 cursor-not-allowed"}`}
+            >
+              Register
+            </button>
+          );
+        })()}
+
+        <div className="flex items-center gap-2 text-gray-400 text-sm mt-2">
+          <span className="flex-1 h-px bg-gray-200"></span>
+          OR
+          <span className="flex-1 h-px bg-gray-200"></span>
+        </div>
+        <button
+          className="w-full flex items-center justify-center gap-3 border border-gray-300 hover:bg-gray-200 py-3 rounded-xl text-gray-700 font-medium transition-all duration-200 cursor-pointer"
+          onClick={() => signIn("google", { callbackUrl: "/" })}
+        >
+          <Image src={googleImg} width={20} height={20} alt="google image" />
+          Continue with Google
+        </button>
+      </motion.form>
+      <Link href={"/login"}>
+        <p className="cursor-pointer text-gray-600 mt-6 text-sm flex items-center gap-1">
+          Already have an account ? <LogIn className="w-4 h-4" />{" "}
+          <span className="text-green-500 hover:underline ">Sign In</span>
+        </p>
+      </Link>
+    </div>
+  );
+};
+
+export default RegisterForm;
