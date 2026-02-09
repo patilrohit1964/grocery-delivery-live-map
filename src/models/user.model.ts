@@ -7,6 +7,17 @@ interface IUser {
   mobile?: string;
   image?: string;
   role: "user" | "deliverBoy" | "admin";
+  location?: {
+    type: {
+      type: String;
+      enum: string[];
+      default: string;
+    };
+    coordinates: {
+      type: Number[];
+      default: number[];
+    };
+  };
 }
 const userSchema = new mongoose.Schema<IUser>(
   {
@@ -37,9 +48,21 @@ const userSchema = new mongoose.Schema<IUser>(
       default: "user",
       // required:true
     },
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number],
+        default: [0, 0],
+      },
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
-
+// for location tracking
+userSchema.index({ location: "2dsphere" });
 const User = mongoose.models.User || mongoose.model("User", userSchema);
 export default User;
