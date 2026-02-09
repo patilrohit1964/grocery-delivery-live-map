@@ -35,7 +35,7 @@ function ManageOrders() {
         </Link>
         <h1 className="text-xl font-bold text-gray-800">My Orders</h1>
       </div>
-      <div className="max-w-6xl mx-auto px-4 pt-24 pb-16 space-y-8">
+      <div className="max-w-6xl mx-auto px-4 pt-10 pb-16 space-y-8">
         <div className="space-y-6">
           {myOrders?.map((item, idx) => (
             <AdminOrderCard order={item} key={item._id?.toString()} />

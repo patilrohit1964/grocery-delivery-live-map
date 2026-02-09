@@ -14,7 +14,7 @@ const connectDb = async () => {
   }
   if (!cache.promise) {
     cache.promise = mongoose
-      .connect(mongodbUrl)
+      .connect(mongodbUrl, { bufferCommands: false })
       .then((conn) => conn.connection);
   }
   try {
