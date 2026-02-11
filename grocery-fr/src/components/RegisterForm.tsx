@@ -47,7 +47,7 @@ const RegisterForm = ({ setStep }: propType) => {
         email: "",
         password: "",
       });
-    } catch (error) {
+    } catch (error: Error | any) {
       toast(error?.response?.data?.message || "Account created", {
         position: "top-right",
         autoClose: 5000,

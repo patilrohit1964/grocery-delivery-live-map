@@ -1,50 +1,62 @@
 "use client";
+import { getSocket } from "@/lib/socket";
 import { Leaf, ShoppingBasket, Smartphone, Truck } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
-
+import { useEffect, useState } from "react";
+const slides = [
+  {
+    id: 1,
+    icon: (
+      <Leaf className="w-20 h-20 sm:w-28 sm:h-28 text-green-400 drop-shadow-lg" />
+    ),
+    title: "Fresh Organic Groceries 🫛",
+    subTitle: "Farm-fresh vegetables, and daily essentials delivered to you.",
+    btnText: "Shop Now",
+    bg: "https://images.unsplash.com/photo-1751200270667-cb13feeac24c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8RnJlc2glMjBPcmdhbmljJTIwR3JvY2VyaWVzfGVufDB8fDB8fHww",
+  },
+  {
+    id: 2,
+    icon: (
+      <Truck className="w-20 h-20 sm:w-28 sm:h-28 text-yellow-400 drop-shadow-lg" />
+    ),
+    title: "Fast & Reliable Delivery 🚚",
+    subTitle: "we ensure your groceries reach your doorstep in no time.",
+    btnText: "Order Now",
+    bg: "https://images.unsplash.com/photo-1616915939238-2a7a363d45c4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fEZhc3QlMjAlMjYlMjBSZWxpYWJsZSUyMERlbGl2ZXJ5fGVufDB8fDB8fHww",
+  },
+  {
+    id: 3,
+    icon: (
+      <Smartphone className="w-20 h-20 sm:w-28 sm:h-28 text-blue-400 drop-shadow-lg" />
+    ),
+    title: "Shop Anytime, Anywhere. 📱",
+    subTitle: "Easy and seamless online grocery shopping experience.",
+    btnText: "Get Started",
+    bg: "https://plus.unsplash.com/premium_photo-1683072028678-d658657434f4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8U2hvcCUyMEFueXRpbWUlMkMlMjBBbnl3aGVyZXxlbnwwfHwwfHx8MA%3D%3D",
+  },
+];
 const HeroSection = () => {
-  const slides = [
-    {
-      id: 1,
-      icon: (
-        <Leaf className="w-20 h-20 sm:w-28 sm:h-28 text-green-400 drop-shadow-lg" />
-      ),
-      title: "Fresh Organic Groceries 🫛",
-      subTitle: "Farm-fresh vegetables, and daily essentials delivered to you.",
-      btnText: "Shop Now",
-      bg: "https://images.unsplash.com/photo-1751200270667-cb13feeac24c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8RnJlc2glMjBPcmdhbmljJTIwR3JvY2VyaWVzfGVufDB8fDB8fHww",
-    },
-    {
-      id: 2,
-      icon: (
-        <Truck className="w-20 h-20 sm:w-28 sm:h-28 text-yellow-400 drop-shadow-lg" />
-      ),
-      title: "Fast & Reliable Delivery 🚚",
-      subTitle: "we ensure your groceries reach your doorstep in no time.",
-      btnText: "Order Now",
-      bg: "https://images.unsplash.com/photo-1616915939238-2a7a363d45c4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fEZhc3QlMjAlMjYlMjBSZWxpYWJsZSUyMERlbGl2ZXJ5fGVufDB8fDB8fHww",
-    },
-    {
-      id: 3,
-      icon: (
-        <Smartphone className="w-20 h-20 sm:w-28 sm:h-28 text-blue-400 drop-shadow-lg" />
-      ),
-      title: "Shop Anytime, Anywhere. 📱",
-      subTitle: "Easy and seamless online grocery shopping experience.",
-      btnText: "Get Started",
-      bg: "https://plus.unsplash.com/premium_photo-1683072028678-d658657434f4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8U2hvcCUyMEFueXRpbWUlMkMlMjBBbnl3aGVyZXxlbnwwfHwwfHx8MA%3D%3D",
-    },
-  ];
   const [current, setCurrent] = useState(0);
+  const { data: userData, status } = useSession();
+  
+  useEffect(() => {
+    if (!userData?.user?.id) return;
 
+    const socket = getSocket();
+    socket.emit("identity", userData.user.id);
+  }, [userData?.user?.id]);
   useEffect(() => {
     const slideInterval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % slides.length);
     }, 4000);
     return () => clearInterval(slideInterval);
   }, [slides.length]);
+  if (status === "loading") {
+    return <h1>Loading...</h1>;
+  }
+
   return (
     <div className="relative w-[98%] mx-auto mt-32 h-[80vh] rounded-3xl overflow-hidden shadow-2xl">
       <AnimatePresence mode="wait">

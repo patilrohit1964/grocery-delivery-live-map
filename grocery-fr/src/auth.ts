@@ -17,13 +17,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         await connectDb();
         const email = credentials.email;
         const password = credentials.password as string;
+        if (!email || !password) {
+          return null;
+        }
         const user = await User.findOne({ email });
         if (!user) {
-          throw new Error("user does not exist");
+          return null;
         }
         const isMatched = await bcrypt.compare(password, user.password);
+
         if (!isMatched) {
-          throw new Error("password does not match");
+          return null;
         }
         return {
           id: user._id.toString(),

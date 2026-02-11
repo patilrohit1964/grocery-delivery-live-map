@@ -9,15 +9,17 @@ interface IUser {
   role: "user" | "deliverBoy" | "admin";
   location?: {
     type: {
-      type: String;
+      type: string;
       enum: string[];
       default: string;
     };
     coordinates: {
-      type: Number[];
+      type: number[];
       default: number[];
     };
   };
+  socketId: null | string;
+  isOnline: boolean;
 }
 const userSchema = new mongoose.Schema<IUser>(
   {
@@ -58,6 +60,14 @@ const userSchema = new mongoose.Schema<IUser>(
         type: [Number],
         default: [0, 0],
       },
+    },
+    socketId: {
+      type: String,
+      default: null,
+    },
+    isOnline: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true },
