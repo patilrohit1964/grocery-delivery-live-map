@@ -22,7 +22,8 @@ export async function POST(
     order.status = status;
     let availableDeliveryBoys: any = [];
     if (status === "out of delivery" && !order.assignment) {
-
+      const { latitude, longitude } = order.address;
+      
     }
   } catch (error) {
     console.log(error, "something went wrong");
