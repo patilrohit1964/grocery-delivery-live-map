@@ -25,7 +25,14 @@ io.on("connection", (socket) => {
     });
   });
   socket.on("updateLocation", async ({ userId, latitude, longitude }) => {
-   
+    await axios.post(
+      `${process.env.NEXT_BASE_URL}/api/socket/update-location`,
+      {
+        userId,
+        latitude,
+        longitude,
+      },
+    );
   });
   socket.on("disconnect", () => {
     console.log("user disconnected", socket.id);

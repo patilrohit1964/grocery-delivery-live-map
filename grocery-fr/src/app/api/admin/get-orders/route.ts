@@ -5,10 +5,11 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     await connectDb();
-    const orders = await Order.find().populate(
-      "user",
-      "name email mobile image",
-    );
+    const orders = await Order.find()
+      .populate("user", "name email mobile image")
+      .sort({
+        createdAt: -1,
+      });
     if (!orders) {
       return NextResponse.json(
         {

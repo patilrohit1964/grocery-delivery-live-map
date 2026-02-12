@@ -7,7 +7,9 @@ export async function GET() {
   try {
     await connectDb();
     const user = await auth();
-    const getUserOrders = await Order.find({ user: user?.user?.id });
+    const getUserOrders = await Order.find({ user: user?.user?.id }).sort({
+      createdAt: -1,
+    });
     if (!getUserOrders) {
       return NextResponse.json(
         {
