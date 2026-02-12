@@ -1,9 +1,9 @@
-import express from "express";
-import mongoose from "mongoose";
+import axios from "axios";
 import dotenv from "dotenv";
-dotenv.config();
+import express from "express";
 import http from "http";
 import { Server } from "socket.io";
+dotenv.config();
 const app = express();
 app.use(express.json());
 const server = http.createServer(app);
@@ -18,9 +18,15 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   console.log("user connected", socket.id);
-  socket.on('identity',(data)=>{
-    console.log(data,'joined data')
-  })
+  socket.on("identity", async (userId) => {
+    await axios.post(`${process.env.NEXT_BASE_URL}/api/socket/connect`, {
+      userId,
+      socketId: socket.id,
+    });
+  });
+  socket.on("updateLocation", async ({ userId, latitude, longitude }) => {
+   
+  });
   socket.on("disconnect", () => {
     console.log("user disconnected", socket.id);
   });

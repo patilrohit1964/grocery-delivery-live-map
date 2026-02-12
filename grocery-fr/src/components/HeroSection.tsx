@@ -1,8 +1,6 @@
 "use client";
-import { getSocket } from "@/lib/socket";
 import { Leaf, ShoppingBasket, Smartphone, Truck } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 const slides = [
@@ -39,14 +37,7 @@ const slides = [
 ];
 const HeroSection = () => {
   const [current, setCurrent] = useState(0);
-  const { data: userData, status } = useSession();
-  
-  useEffect(() => {
-    if (!userData?.user?.id) return;
 
-    const socket = getSocket();
-    socket.emit("identity", userData.user.id);
-  }, [userData?.user?.id]);
   useEffect(() => {
     const slideInterval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % slides.length);
