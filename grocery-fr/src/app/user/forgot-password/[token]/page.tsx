@@ -1,15 +1,35 @@
-'use client'
+"use client";
+import axios from "axios";
 import { Eye, EyeClosed, Lock } from "lucide-react";
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { FormEvent, use, useState } from "react";
+import { toast } from "react-toastify";
 
-function ForgotPassword() {
+function ForgotPassword({ params }: { params: string }) {
+  const { token } = use(params);
   const [showPass, setShowPass] = useState(false);
+  const router = useRouter();
   const [form, setForm] = useState({
     password: "",
     confirmPassword: "",
   });
-  const handleForgotPass = async () => {};
+  const handleForgotPass = async (e: FormEvent) => {
+    e.preventDefault();
+    try {
+      const { data } = await axios.post("/api/auth/forgot-password", {
+        password: form.password,
+        token,
+      });
+      if (!data.success) {
+        toast.error(data.message);
+      }
+      toast.success(data.message);
+      router.push("/login");
+    } catch (error) {
+      console.log(error, "error forgot pass");
+    }
+  };
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-6 py-10 bg-white relative">
       <motion.h1
@@ -60,6 +80,10 @@ function ForgotPassword() {
               type={showPass ? "text" : "password"}
               placeholder="confirm password"
               className="w-full border border-gray-300 rounded-xl py-3 pl-10 pr-4 text-gray-800 focus:ring-2 focus:ring-green-500 focus:outline-none"
+              onChange={(e) =>
+                setForm({ ...form, confirmPassword: e.target.value })
+              }
+              value={form.confirmPassword}
             />
             {showPass ? (
               <Eye

@@ -83,7 +83,7 @@ const forgotPasswordEmailTemplate = (resetLink) => {
             <a href="${resetLink}" class="button">Reset Password</a>
             
             <p>Or copy and paste this link in your browser:</p>
-            <p style="word-break: break-all; color: #667eea;">{resetLink}</p>
+            <p style="word-break: break-all; color: #667eea;">${resetLink}</p>
             
             <div class="security-note">
                 <strong>Security Notice:</strong> This link will expire in 24 hours. If you didn't request this reset, please ignore this email.

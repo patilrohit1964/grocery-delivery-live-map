@@ -1,11 +1,17 @@
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
 import { motion } from "motion/react";
 import { Mail } from "lucide-react";
+import axios from "axios";
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
-  const handleForgotPass = async () => {
+  const handleForgotPass = async (e: FormEvent) => {
+    e.preventDefault();
     try {
-      
+      const { data } = await axios.post(
+        "/api/auth/send-forgot-password-email",
+        { email },
+      );
+      console.log(data, "forgot data");
     } catch (error) {
       console.log(error, "error forgot pass");
     }
