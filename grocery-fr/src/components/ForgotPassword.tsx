@@ -3,7 +3,13 @@ import { motion } from "motion/react";
 import { Mail } from "lucide-react";
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
-  const handleForgotPass = async () => {};
+  const handleForgotPass = async () => {
+    try {
+      
+    } catch (error) {
+      console.log(error, "error forgot pass");
+    }
+  };
   return (
     <motion.form
       onSubmit={handleForgotPass}
