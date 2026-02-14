@@ -30,7 +30,7 @@ export async function POST(
       const { latitude, longitude } = order.address;
       // use this operator for live location tracking
       const nearByDeliveryBoys = await User.find({
-        role: "deliverBoy",
+        role: "deliveryBoy",
         location: {
           $near: {
             $geometry: {
@@ -55,6 +55,7 @@ export async function POST(
         await order.save();
         return NextResponse.json(
           {
+            success: true,
             message: "delivery boy not founds",
           },
           { status: 200 },

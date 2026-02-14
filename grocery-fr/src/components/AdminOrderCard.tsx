@@ -1,4 +1,5 @@
 import { IOrder } from "@/models/order.model";
+import axios from "axios";
 import {
   ChevronDown,
   ChevronUp,
@@ -10,14 +11,26 @@ import {
   User,
 } from "lucide-react";
 import { motion } from "motion/react";
-import { getStatusColor } from "./UserOrderCard";
 import Image from "next/image";
 import { useState } from "react";
+import { getStatusColor } from "./UserOrderCard";
 const statusOptions = ["pending", "out of delivery"];
 function AdminOrderCard({ order }: { order: IOrder }) {
   const [expanded, setExpanded] = useState(false);
-  const updateStatus = async (orderId: string, statusValue: string) => {
-
+  const [status, setStatus] = useState<string>(order.status);
+  const updateStatus = async (orderId: string, status: string) => {
+    try {
+      const { data } = await axios.post(
+        `/api/admin/update-order-status/${orderId}`,
+        { status },
+      );
+      console.log(data,'order dat')
+      if(data.success){
+        setStatus(status);
+      }
+    } catch (error) {
+      console.log(error, "error while order status update");
+    }
   };
   return (
     <motion.div
@@ -63,14 +76,15 @@ function AdminOrderCard({ order }: { order: IOrder }) {
         </div>
         <div className="flex flex-col items-start md:items-end gap-2">
           <span
-            className={`text-xs font-semibold px-3 py-1 rounded-full border capitalize ${getStatusColor(order.status)}`}
+            className={`text-xs font-semibold px-3 py-1 rounded-full border capitalize ${getStatusColor(status)}`}
           >
-            {order.status}
+            {status}
           </span>
           <select
             onChange={(e) =>
               updateStatus(order._id?.toString()!, e.target.value)
             }
+            value={status}
             className="border border-gray-300 rounded-lg px-3 py-1 text-sm shadow-sm hover:border-green-400 transition focus:ring-2 focus:ring-green-500 outline-none"
           >
             {statusOptions.map((status) => (
@@ -137,9 +151,9 @@ function AdminOrderCard({ order }: { order: IOrder }) {
           <Truck size={16} className="text-green-600" />
           Delivery:
           <span
-            className={`${getStatusColor(order.status)} border py-1 px-3 rounded-full font-semibold`}
+            className={`${getStatusColor(status)} border py-1 px-3 rounded-full font-semibold`}
           >
-            {order.status}
+            {status}
           </span>
         </div>
         <div>

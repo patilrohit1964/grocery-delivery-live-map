@@ -6,7 +6,7 @@ interface IUser {
   password?: string;
   mobile?: string;
   image?: string;
-  role: "user" | "deliverBoy" | "admin";
+  role: "user" | "deliveryBoy" | "admin";
   location?: {
     type: {
       type: string;

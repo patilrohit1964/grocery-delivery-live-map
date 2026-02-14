@@ -28,7 +28,7 @@ interface IUser {
   password?: string;
   mobile?: string;
   image?: string;
-  role: "user" | "deliverBoy" | "admin";
+  role: "user" | "deliveryBoy" | "admin";
 }
 const Navbar = ({ user }: { user: IUser }) => {
   const [open, setOpen] = useState(false);

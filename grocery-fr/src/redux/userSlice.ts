@@ -6,7 +6,7 @@ interface IUser {
   email: string;
   password?: string;
   mobile?: string;
-  role: "user" | "deliverBoy" | "admin";
+  role: "user" | "deliveryBoy" | "admin";
   image?: string;
 }
 interface IUserSlice {
