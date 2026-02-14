@@ -4,7 +4,7 @@ import { Bike, type LucideIcon, User, UserCog } from "lucide-react";
 import { motion } from "motion/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 interface User {
   id: string;
@@ -55,6 +55,19 @@ const EditRoleMobile = () => {
       console.log(error);
     }
   };
+  useEffect(() => {
+    const checkForAdmin = async () => {
+      try {
+        const { data } = await axios.get(`/api/check-for-admin`);
+        if (data.adminExist) {
+          setRoles((prev) => prev.filter((role) => role.id !== "admin"));
+        }
+      } catch (error) {
+        console.log(error, "error while geting check admin");
+      }
+    };
+    checkForAdmin();
+  }, []);
   return (
     <div className="flex flex-col items-center min-h-screen p-6 w-full bg-white">
       <motion.h1
