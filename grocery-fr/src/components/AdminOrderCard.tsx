@@ -16,6 +16,9 @@ import { useState } from "react";
 const statusOptions = ["pending", "out of delivery"];
 function AdminOrderCard({ order }: { order: IOrder }) {
   const [expanded, setExpanded] = useState(false);
+  const updateStatus = async (orderId: string, statusValue: string) => {
+
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
@@ -64,7 +67,12 @@ function AdminOrderCard({ order }: { order: IOrder }) {
           >
             {order.status}
           </span>
-          <select className="border border-gray-300 rounded-lg px-3 py-1 text-sm shadow-sm hover:border-green-400 transition focus:ring-2 focus:ring-green-500 outline-none">
+          <select
+            onChange={(e) =>
+              updateStatus(order._id?.toString()!, e.target.value)
+            }
+            className="border border-gray-300 rounded-lg px-3 py-1 text-sm shadow-sm hover:border-green-400 transition focus:ring-2 focus:ring-green-500 outline-none"
+          >
             {statusOptions.map((status) => (
               <option key={status} value={status}>
                 {status.toUpperCase()}
