@@ -13,7 +13,7 @@ const io = new Server(server, {
     origin: process.env.NEXT_BASE_URL,
   },
 });
-// if we want listen any even that coming from frontend then use (on) method for that
+// if we want listen any event that coming from frontend then use (on) method for that
 // jevha pan aapan kahi listen karto tevha he socket ch (on) method use krych aani jevha pan konta emit karto tevha io ch (on) use krych
 
 io.on("connection", (socket) => {
@@ -46,7 +46,8 @@ app.post("/notify", (req, res) => {
     io.to(socketId).emit(event, data);
   } else {
     // if socket id not peresent then listen this event all
-    io.emit();
+    io.emit("new-order", data);
+    io.emit("status-update", data);
   }
   return res.status(200).json({
     success: true,
