@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-interface IDELIVERYASSIGNMENT {
+export interface IDELIVERYASSIGNMENT {
   _id?: mongoose.Types.ObjectId;
   order: mongoose.Types.ObjectId;
   broadcastTo: mongoose.Types.ObjectId[];
@@ -36,7 +36,8 @@ const deliveryAssignment = new mongoose.Schema<IDELIVERYASSIGNMENT>(
     },
     acceptedAt: {
       type: Date,
-      required: true,
+      // required: true,
+      default: null,
     },
   },
   { timestamps: true },

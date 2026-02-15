@@ -41,7 +41,6 @@ const Checkout = () => {
   const { subTotal, finalTotal, deliveryFee, cartData } = useSelector(
     (state: RootState) => state.cart,
   );
-  console.log(userData, "userdata");
   const [address, setAddress] = useState({
     fullName: "",
     mobile: "",

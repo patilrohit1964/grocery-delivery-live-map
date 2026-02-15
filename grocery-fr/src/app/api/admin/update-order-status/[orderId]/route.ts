@@ -1,4 +1,5 @@
 import connectDb from "@/lib/db";
+import emitEventHandler from "@/lib/emitEventHandler";
 import DeliverAssignment from "@/models/deliveryAssignment";
 import Order from "@/models/order.model";
 import User from "@/models/user.model";
@@ -50,7 +51,7 @@ export async function POST(
       const availableDeliveryBoys = nearByDeliveryBoys.filter(
         (db) => !busyIdSet?.has(String(db?._id)),
       );
-      const candidates = deliveryBoysPayload?.map((b: any) => String(b?._id));
+      const candidates = availableDeliveryBoys?.map((b: any) => String(b?._id));
       if (candidates.length === 0) {
         await order.save();
         return NextResponse.json(
@@ -75,6 +76,7 @@ export async function POST(
         longitude: b.location.coordinates[0],
       }));
       await deliveryAssignment.populate("order");
+      await emitEventHandler("status-update", deliveryAssignment);
       // order.assignDeliveryBoy = deliveryAssignment.assignTo;
     }
     await order.save();

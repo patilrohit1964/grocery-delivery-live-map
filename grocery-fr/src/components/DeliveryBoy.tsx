@@ -1,9 +1,12 @@
-import React from 'react'
+import DeliveryBoyDashboard from "./DeliveryBoyDashboard";
 
 const DeliveryBoy = () => {
+ 
   return (
-    <div>DeliveryBoy</div>
-  )
-}
+    <div>
+      <DeliveryBoyDashboard />
+    </div>
+  );
+};
 
-export default DeliveryBoy
+export default DeliveryBoy;

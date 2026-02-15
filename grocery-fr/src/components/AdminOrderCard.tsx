@@ -24,7 +24,7 @@ function AdminOrderCard({ order }: { order: IOrder }) {
         `/api/admin/update-order-status/${orderId}`,
         { status },
       );
-      console.log(data,'order dat')
+      console.log(data,'order data')
       if(data.success){
         setStatus(status);
       }
