@@ -38,6 +38,21 @@ io.on("connection", (socket) => {
     console.log("user disconnected", socket.id);
   });
 });
+
+app.post("/notify", (req, res) => {
+  const { event, data, socketId } = req.body;
+  if (socketId) {
+    // if we want event only particular user or id then use to(socketId) and use emit for event know
+    io.to(socketId).emit(event, data);
+  } else {
+    // if socket id not peresent then listen this event all
+    io.emit();
+  }
+  return res.status(200).json({
+    success: true,
+  });
+});
+
 server.listen(port, () => {
   console.log("server started at", port);
 });
