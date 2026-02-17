@@ -171,8 +171,9 @@ const Checkout = () => {
       setPaymentLoading(false);
       toast.success(res.data.message || "order placed successfully");
       router.push("/user/order-success");
-    } catch (error) {
+    } catch (error: Error | any) {
       console.log(error, "error");
+      toast("error", error?.response?.data?.message);
       setPaymentLoading(false);
     } finally {
       setPaymentLoading(false);
@@ -416,7 +417,9 @@ const Checkout = () => {
             </div>
             <div className="flex justify-between">
               <span className="font-semibold">Delivery Fee</span>
-              <span className="font-semibold text-gray-600">₹{deliveryFee}</span>
+              <span className="font-semibold text-gray-600">
+                ₹{deliveryFee}
+              </span>
             </div>
             <div className="flex justify-between text-lg border-t pt-3">
               <span className="font-bold">Final Total</span>

@@ -1,6 +1,6 @@
 import connectDb from "@/lib/db";
 import emitEventHandler from "@/lib/emitEventHandler";
-import DeliverAssignment from "@/models/deliveryAssignment";
+import DeliverAssignment from "@/models/deliveryAssignment.model";
 import Order from "@/models/order.model";
 import User from "@/models/user.model";
 import { NextRequest, NextResponse } from "next/server";

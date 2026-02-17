@@ -1,5 +1,5 @@
 "use client";
-import { IDELIVERYASSIGNMENT } from "@/models/deliveryAssignment";
+import { IDELIVERYASSIGNMENT } from "@/models/deliveryAssignment.model";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";

@@ -7,6 +7,7 @@ import { motion } from "motion/react";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { toast, Zoom } from "react-toastify";
 
@@ -15,29 +16,33 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const router = useRouter();
   const [showPass, setShowPass] = useState(false);
   const [forgotPass, setForgotPass] = useState(false);
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
-    try {
-      await signIn("credentials", {
-        email: form?.email,
-        password: form.password,
-        callbackUrl: "/",
-      });
-    } catch (error: Error | any) {
-      toast(error?.response?.data?.message || "Account created", {
-        position: "top-right",
-        autoClose: 5000,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
+
+    const res = await signIn("credentials", {
+      email: form?.email,
+      password: form.password,
+      redirect: false,
+    });
+
+    if (res?.ok) {
+      toast("Login successful", { theme: "dark" });
+      userGetMe();
+      router.push("/");
+    } else {
+      toast(res?.error || "Invalid credentials", {
         theme: "dark",
-        transition: Zoom,
       });
-      console.log(error);
+      setForm({
+        email: "",
+        password: "",
+      });
     }
   };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-6 py-10 bg-white relative">
       <motion.h1

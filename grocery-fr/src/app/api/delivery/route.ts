@@ -1,6 +1,8 @@
 import { auth } from "@/auth";
 import connectDb from "@/lib/db";
-import DeliverAssignment from "@/models/deliveryAssignment";
+import mongoose from "mongoose";
+import DeliverAssignment from "@/models/deliveryAssignment.model";
+import Order from "@/models/order.model";
 import { NextResponse } from "next/server";
 export async function GET() {
   try {
