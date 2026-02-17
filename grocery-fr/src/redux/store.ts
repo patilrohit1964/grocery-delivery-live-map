@@ -1,4 +1,4 @@
-import { persistStore } from 'redux-persist';
+import { persistStore } from "redux-persist";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import userSlice from "./userSlice";
 import cartSlice from "./cartSlice";
@@ -9,8 +9,10 @@ const rootReducer = combineReducers({
 
 export const store = configureStore({
   reducer: rootReducer,
+  middleware: (getDifaultMiddleware) =>
+    getDifaultMiddleware({ serializableCheck: false }),
 });
-const persitedStore=persistStore(store,)
+export const persitedStore = persistStore(store);
 
 // Infer the type of makeStore
 export type RootState = ReturnType<typeof store.getState>;
