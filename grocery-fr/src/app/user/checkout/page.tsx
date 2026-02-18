@@ -146,7 +146,7 @@ const Checkout = () => {
   const handleCod = async () => {
     setPaymentLoading(true);
     const orderData = {
-      userId: "696e1a4d23c7fab5a52eb368",
+      userId: userData?._id,
       address: {
         ...address,
         latitude: position?.[0],

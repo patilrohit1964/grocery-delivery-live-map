@@ -1,5 +1,6 @@
 "use client";
 import { RootState } from "@/redux/store";
+import { logoutUser } from "@/redux/userSlice";
 import {
   Boxes,
   ClipboardCheckIcon,
@@ -19,7 +20,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 interface IUser {
   _id?: mongoose.Types.ObjectId;
@@ -32,6 +33,7 @@ interface IUser {
 }
 const Navbar = ({ user }: { user: IUser }) => {
   const [open, setOpen] = useState(false);
+  const dispatch=useDispatch()
   const { cartData } = useSelector((state: RootState) => state.cart);
   const [searchOpen, setSearchOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -127,7 +129,10 @@ const Navbar = ({ user }: { user: IUser }) => {
             <div className="my-5 border-t border-white/20"></div>
             <button
               className="flex items-center gap-3 text-red-300 font-semibold mt-auto hover:bg-red-500/20 p-3 rounded-lg transition-all"
-              onClick={async () => signOut({ callbackUrl: "/" })}
+              onClick={async () =>{
+                 signOut({ callbackUrl: "/" })
+                 dispatch(logoutUser())
+                }}
             >
               <LogOut className="w-5 h-5 text-red-300" />
               Log Out

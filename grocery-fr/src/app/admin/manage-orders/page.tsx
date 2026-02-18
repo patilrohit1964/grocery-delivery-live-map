@@ -29,7 +29,6 @@ function ManageOrders() {
   useEffect((): any => {
     const socket = getSocket();
     socket?.on("new-order", (newOrder) => {
-      console.log(newOrder, "new order");
       setMyOrders((prev) => [newOrder, ...prev!]);
     });
     return () => socket.off("new-order");

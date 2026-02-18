@@ -1,46 +1,28 @@
 "use client";
 import googleImg from "@/assests/download.jpg";
 import ForgotPassword from "@/components/ForgotPassword";
-import userGetMe from "@/hooks/userGetMe";
 import { Eye, EyeClosed, Leaf, Lock, LogIn, Mail } from "lucide-react";
 import { motion } from "motion/react";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { toast, Zoom } from "react-toastify";
 
 const Login = () => {
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
-  const router = useRouter();
   const [showPass, setShowPass] = useState(false);
   const [forgotPass, setForgotPass] = useState(false);
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
 
-    const res = await signIn("credentials", {
+    await signIn("credentials", {
       email: form?.email,
       password: form.password,
-      redirect: false,
+      callbackUrl: "/",
     });
-
-    if (res?.ok) {
-      toast("Login successful", { theme: "dark" });
-      userGetMe();
-      router.push("/");
-    } else {
-      toast(res?.error || "Invalid credentials", {
-        theme: "dark",
-      });
-      setForm({
-        email: "",
-        password: "",
-      });
-    }
   };
 
   return (

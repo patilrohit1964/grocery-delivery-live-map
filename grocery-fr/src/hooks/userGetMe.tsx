@@ -15,7 +15,7 @@ const userGetMe = () => {
         if (!result?.data?.success) {
           toast.error(result?.data?.message || "failed to get user details");
         }
-        dispatch(setUserData(result?.data));
+        dispatch(setUserData(result?.data?.data));
       } catch (error) {
         console.log(error, "error");
       }

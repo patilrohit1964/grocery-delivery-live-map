@@ -43,14 +43,14 @@ function AdminOrderCard({ order }: { order: IOrder }) {
         <div className="space-y-1">
           <p className="text-lg font-bold flex items-center gap-2 text-green-700">
             <Package size={20} />
-            Order #{order._id?.toString().slice(-6)}
+            Order #{order?._id?.toString().slice(-6)}
           </p>
           <span
-            className={`inline-block text-xs font-semibold px-3 py-1 rounded-full border ${order.isPaid ? "bg-green-100 text-green-700 border-green-300" : "bg-red-100 text-red-700 border-red-100"}`}
+            className={`inline-block text-xs font-semibold px-3 py-1 rounded-full border ${order?.isPaid ? "bg-green-100 text-green-700 border-green-300" : "bg-red-100 text-red-700 border-red-100"}`}
           >
-            {order.isPaid ? "Paid" : "Unpaid"}
+            {order?.isPaid ? "Paid" : "Unpaid"}
           </span>
-          <p>{new Date(order.createdAt!).toLocaleString()}</p>
+          <p>{new Date(order?.createdAt!).toLocaleString()}</p>
           <div className="mt-3 space-y-1 text-gray-700 text-sm">
             <p className="flex items-center gap-2 font-semibold">
               <User size={16} className="text-green-600" />
@@ -67,7 +67,7 @@ function AdminOrderCard({ order }: { order: IOrder }) {
             <p className="flex items-center gap-2 font-semibold">
               <CreditCard size={16} className="text-green-600" />
               <span>
-                {order.paymentMethod === "cod"
+                {order?.paymentMethod === "cod"
                   ? "Cash On Delivery"
                   : "Online Payment"}
               </span>
@@ -82,14 +82,14 @@ function AdminOrderCard({ order }: { order: IOrder }) {
           </span>
           <select
             onChange={(e) =>
-              updateStatus(order._id?.toString()!, e.target.value)
+              updateStatus(order?._id?.toString()!, e.target.value)
             }
             value={status}
             className="border border-gray-300 rounded-lg px-3 py-1 text-sm shadow-sm hover:border-green-400 transition focus:ring-2 focus:ring-green-500 outline-none"
           >
             {statusOptions.map((status) => (
               <option key={status} value={status}>
-                {status.toUpperCase()}
+                {status?.toUpperCase()}
               </option>
             ))}
           </select>
@@ -102,7 +102,7 @@ function AdminOrderCard({ order }: { order: IOrder }) {
         >
           <span className="flex items-center gap-2 justify-center">
             <Package size={16} className="text-green-600" />
-            {expanded ? "Hide Order Items" : `View ${order.items.length} Items`}
+            {expanded ? "Hide Order Items" : `View ${order?.items?.length} Items`}
           </span>
           {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </button>
@@ -116,14 +116,14 @@ function AdminOrderCard({ order }: { order: IOrder }) {
           className="overflow-hidden"
         >
           <div className="mt-3 space-y-3">
-            {order.items.map((item, idx) => (
+            {order?.items?.map((item, idx) => (
               <div
                 key={idx}
                 className="flex items-center justify-between bg-gray-50 rounded-xl px-3 py-2 hover:bg-gray-100 transition"
               >
                 <div className="flex items-center gap-3">
                   <Image
-                    src={item.image}
+                    src={item?.image}
                     height={48}
                     width={48}
                     className="object-cover border border-gray-200 rounded-lg"
@@ -131,15 +131,15 @@ function AdminOrderCard({ order }: { order: IOrder }) {
                   />
                   <div>
                     <p className="text-sm font-medium text-gray-800">
-                      {item.name} x pack
+                      {item?.name} x pack
                     </p>
                     <p className="text-xs text-gray-500">
-                      {item.quantity} x {item.unit}
+                      {item?.quantity} x {item?.unit}
                     </p>
                   </div>
                 </div>
                 <h3 className="font-semibold text-lg">
-                  ₹{Number(item.price) * item.quantity}
+                  ₹{Number(item?.price) * item?.quantity}
                 </h3>
               </div>
             ))}
@@ -158,7 +158,7 @@ function AdminOrderCard({ order }: { order: IOrder }) {
         </div>
         <div>
           Total:{" "}
-          <span className="text-green-600 font-bold">₹{order.totalAmount}</span>
+          <span className="text-green-600 font-bold">₹{order?.totalAmount}</span>
         </div>
       </div>
     </motion.div>

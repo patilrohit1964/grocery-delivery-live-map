@@ -1,10 +1,9 @@
 "use client";
-import { IDELIVERYASSIGNMENT } from "@/models/deliveryAssignment.model";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { motion } from "motion/react";
 import { getSocket } from "@/lib/socket";
+import axios from "axios";
+import { motion } from "motion/react";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 const DeliveryBoyDashboard = () => {
   const [assignments, setAssignments] = useState<any[]>([]);
   useEffect(() => {
@@ -12,7 +11,7 @@ const DeliveryBoyDashboard = () => {
       try {
         const { data } = await axios.get("/api/delivery");
         if (!data.success) {
-          toast.error(data.message || "assignments not found");
+          toast.error(data?.message || "assignments not found");
         }
         setAssignments(data?.assignments);
       } catch (error) {
@@ -23,10 +22,11 @@ const DeliveryBoyDashboard = () => {
   }, []);
   useEffect((): any => {
     const socket = getSocket();
+    // if listen then use on for socket in frontend
     socket?.on("status-update", (newOrder) => {
       setAssignments((prev) => [newOrder, ...prev]);
     });
-    return () => socket.off("new-order");
+    return () => socket.off("status-update");
   }, []);
   return (
     <div className="w-full min-h-screen bg-gray-50 p-4">
@@ -37,12 +37,12 @@ const DeliveryBoyDashboard = () => {
         {assignments?.map((assignment: any) => (
           <div
             className="p-5 bg-white rounded-xl shadow mb-4 border"
-            key={assignment._id}
+            key={assignment?._id}
           >
             <p>
-              <b>Order Id</b>:{assignment.order._id.slice(-6)}
+              <b>Order Id</b>:{assignment?.order?._id.slice(-6) || 'N/A'}
             </p>
-            <p>{assignment.order.address.fullAddress}</p>
+            <p>{assignment?.order?.address?.fullAddress}</p>
             <div className="flex gap-3 mt-4">
               <motion.button
                 whileTap={{ scale: 0.9 }}

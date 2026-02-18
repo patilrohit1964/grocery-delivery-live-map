@@ -1,4 +1,5 @@
 "use client";
+import userGetMe from "@/hooks/userGetMe";
 import { Leaf, ShoppingBasket, Smartphone, Truck } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
@@ -37,7 +38,7 @@ const slides = [
 ];
 const HeroSection = () => {
   const [current, setCurrent] = useState(0);
-
+  userGetMe();
   useEffect(() => {
     const slideInterval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % slides.length);
