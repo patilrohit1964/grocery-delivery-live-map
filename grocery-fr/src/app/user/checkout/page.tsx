@@ -1,5 +1,6 @@
 "use client";
-import { RootState } from "@/redux/store";
+import { clearCart } from "@/redux/cartSlice";
+import { AppDispatch, RootState } from "@/redux/store";
 import axios from "axios";
 import L, { LatLngExpression } from "leaflet";
 import { OpenStreetMapProvider } from "leaflet-geosearch";
@@ -22,7 +23,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 const marker = new L.Icon({
@@ -33,12 +34,13 @@ const marker = new L.Icon({
 const Checkout = () => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
+  const dispatch = useDispatch<AppDispatch>();
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "online">("cod");
   const [mapSearchLoading, setMapSearchLoading] = useState<boolean>(false);
   const [position, setPosition] = useState<[number, number] | null>(null);
   const { userData } = useSelector((state: RootState) => state.user);
-  console.log(userData,'userdata')
+  console.log(userData, "userdata");
   const { subTotal, finalTotal, deliveryFee, cartData } = useSelector(
     (state: RootState) => state.cart,
   );
@@ -171,6 +173,7 @@ const Checkout = () => {
       }
       setPaymentLoading(false);
       toast.success(res.data.message || "order placed successfully");
+      dispatch(clearCart());
       router.push("/user/order-success");
     } catch (error: Error | any) {
       console.log(error, "error");
@@ -208,6 +211,7 @@ const Checkout = () => {
         return toast.error(res.data.message || "failed to place order");
       }
       setPaymentLoading(false);
+      dispatch(clearCart());
       router.push(res.data.url);
     } catch (error) {
       setPaymentLoading(false);
