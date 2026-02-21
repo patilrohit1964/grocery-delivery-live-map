@@ -67,6 +67,13 @@ export async function POST(
         broadcastTo: candidates,
         status: "broadcasted",
       });
+      await deliveryAssignment.populate("order");
+      for (const boyId of candidates) {
+        const boy = await User.findById(boyId);
+        if (boy.socketId) {
+          emitEventHandler("new-assignment", deliveryAssignment, boy.socketId);
+        }
+      }
       order.assignment = deliveryAssignment._id;
       deliveryBoysPayload = availableDeliveryBoys.map((b) => ({
         _id: b._id,
@@ -76,7 +83,6 @@ export async function POST(
         longitude: b.location.coordinates[0],
       }));
       await deliveryAssignment.populate("order");
-      await emitEventHandler("status-update", deliveryAssignment);
       // order.assignDeliveryBoy = deliveryAssignment.assignTo;
     }
     await order.save();

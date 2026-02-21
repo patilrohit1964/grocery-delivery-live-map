@@ -47,7 +47,6 @@ app.post("/notify", (req, res) => {
   } else {
     // if socket id not peresent then listen this event all
     io.emit("new-order", data);
-    io.emit("status-update", data);
   }
   return res.status(200).json({
     success: true,

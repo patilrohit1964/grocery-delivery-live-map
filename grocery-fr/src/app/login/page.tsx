@@ -17,7 +17,6 @@ const Login = () => {
   const [forgotPass, setForgotPass] = useState(false);
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
-
     await signIn("credentials", {
       email: form?.email,
       password: form.password,

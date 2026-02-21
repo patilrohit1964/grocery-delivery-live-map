@@ -21,7 +21,7 @@ export default function RootLayout({
         <Provider>
           <StoreProvider>{children}</StoreProvider>
         </Provider>
-        <ToastContainer />
+        <ToastContainer position="top-center" pauseOnHover={false}/>
       </body>
     </html>
   );

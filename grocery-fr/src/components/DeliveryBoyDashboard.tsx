@@ -9,7 +9,7 @@ const DeliveryBoyDashboard = () => {
   useEffect(() => {
     const fetchAssignments = async () => {
       try {
-        const { data } = await axios.get("/api/delivery");
+        const { data } = await axios.get("/api/delivery/get-assignments");
         if (!data.success) {
           toast.error(data?.message || "assignments not found");
         }
@@ -23,10 +23,10 @@ const DeliveryBoyDashboard = () => {
   useEffect((): any => {
     const socket = getSocket();
     // if listen then use on for socket in frontend
-    socket?.on("status-update", (newOrder) => {
-      setAssignments((prev) => [newOrder, ...prev]);
+    socket?.on("new-assignment", (deliveryAssignment) => {
+      setAssignments((prev) => [...prev, deliveryAssignment]);
     });
-    return () => socket.off("status-update");
+    return () => socket.off("new-assignment");
   }, []);
   return (
     <div className="w-full min-h-screen bg-gray-50 p-4">
@@ -40,7 +40,7 @@ const DeliveryBoyDashboard = () => {
             key={assignment?._id}
           >
             <p>
-              <b>Order Id</b>:{assignment?.order?._id.slice(-6) || 'N/A'}
+              <b>Order Id</b>:{assignment?.order?._id.slice(-6) || "N/A"}
             </p>
             <p>{assignment?.order?.address?.fullAddress}</p>
             <div className="flex gap-3 mt-4">

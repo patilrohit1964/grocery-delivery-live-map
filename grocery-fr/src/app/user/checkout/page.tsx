@@ -38,6 +38,7 @@ const Checkout = () => {
   const [mapSearchLoading, setMapSearchLoading] = useState<boolean>(false);
   const [position, setPosition] = useState<[number, number] | null>(null);
   const { userData } = useSelector((state: RootState) => state.user);
+  console.log(userData,'userdata')
   const { subTotal, finalTotal, deliveryFee, cartData } = useSelector(
     (state: RootState) => state.cart,
   );
