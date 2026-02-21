@@ -6,7 +6,7 @@ export async function GET() {
   try {
     await connectDb();
     const orders = await Order.find()
-      .populate("user", "name email mobile image")
+      .populate("user assignDeliveryBoy", "name email mobile image")
       .sort({
         createdAt: -1,
       });

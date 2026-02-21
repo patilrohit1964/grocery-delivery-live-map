@@ -1,17 +1,20 @@
 "use client";
 import { getSocket } from "@/lib/socket";
 import axios from "axios";
+import { Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 const DeliveryBoyDashboard = () => {
   const [assignments, setAssignments] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   useEffect(() => {
     const fetchAssignments = async () => {
       try {
         const { data } = await axios.get("/api/delivery/get-assignments");
         if (!data.success) {
           toast.error(data?.message || "assignments not found");
+          return;
         }
         setAssignments(data?.assignments);
       } catch (error) {
@@ -28,6 +31,24 @@ const DeliveryBoyDashboard = () => {
     });
     return () => socket.off("new-assignment");
   }, []);
+  const handleAcceptOrder = async (id: string) => {
+    setLoading(true);
+    try {
+      const { data } = await axios.get(
+        `/api/delivery/assignment/${id}/accept-assignment`,
+      );
+      if (!data.success) {
+        toast.error(data?.message || "failed to accept assignment");
+        return;
+      }
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="w-full min-h-screen bg-gray-50 p-4">
       <div className="max-w-3xl mx-auto">
@@ -47,8 +68,16 @@ const DeliveryBoyDashboard = () => {
               <motion.button
                 whileTap={{ scale: 0.9 }}
                 className="cursor-pointer hover:bg-green-700 flex-1 bg-green-600 text-white py-2 rounded-lg"
+                onClick={() => handleAcceptOrder(assignment?._id)}
               >
-                Accept
+                {loading ? (
+                  <>
+                    <Loader2 />
+                    "Accepting..."
+                  </>
+                ) : (
+                  "Accept"
+                )}
               </motion.button>
               <motion.button
                 whileTap={{ scale: 0.9 }}

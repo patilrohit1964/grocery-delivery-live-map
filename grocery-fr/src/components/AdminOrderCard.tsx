@@ -1,4 +1,4 @@
-import { IOrder } from "@/models/order.model";
+import { IUser } from "@/models/user.model";
 import axios from "axios";
 import {
   ChevronDown,
@@ -9,29 +9,67 @@ import {
   Phone,
   Truck,
   User,
+  UserCheck2,
 } from "lucide-react";
+import mongoose from "mongoose";
 import { motion } from "motion/react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getStatusColor } from "./UserOrderCard";
+
 const statusOptions = ["pending", "out of delivery"];
+interface IOrder {
+  _id?: mongoose.Types.ObjectId;
+  user: mongoose.Types.ObjectId;
+  items: [
+    {
+      grocery: mongoose.Types.ObjectId;
+      name: string;
+      price: string;
+      unit: string;
+      image: string;
+      quantity: number;
+    },
+  ];
+  isPaid: boolean;
+  totalAmount: number;
+  paymentMethod: "cod" | "online";
+  address: {
+    fullName: string;
+    city: string;
+    state: string;
+    pincode: string;
+    fullAddress: string;
+    mobile: string;
+    latitude: number;
+    longitude: number;
+  };
+  assignment?: mongoose.Types.ObjectId;
+  assignDeliveryBoy?: IUser;
+  status: "pending" | "out of delivery" | "delivered";
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 function AdminOrderCard({ order }: { order: IOrder }) {
+  console.log(order, "order");
   const [expanded, setExpanded] = useState(false);
-  const [status, setStatus] = useState<string>(order.status);
+  const [status, setStatus] = useState<string>("pending");
   const updateStatus = async (orderId: string, status: string) => {
     try {
       const { data } = await axios.post(
         `/api/admin/update-order-status/${orderId}`,
         { status },
       );
-      console.log(data,'order data')
-      if(data.success){
+      if (data.success) {
         setStatus(status);
       }
     } catch (error) {
       console.log(error, "error while order status update");
     }
   };
+  useEffect(() => {
+    setStatus(order.status);
+  }, [order]);
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
@@ -72,6 +110,33 @@ function AdminOrderCard({ order }: { order: IOrder }) {
                   : "Online Payment"}
               </span>
             </p>
+            {order?.assignDeliveryBoy && (
+              <div className="mt-4 bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3 text-sm text-gray-700">
+                  <UserCheck2 className="text-blue-600" size={18} />
+                  <div className="font-semibold text-gray-800">
+                    <p>
+                      Assigned To:{" "}
+                      <span>
+                        {order?.assignDeliveryBoy?.name
+                          .charAt(0)
+                          .toUpperCase() +
+                          order.assignDeliveryBoy.name.slice(1)}
+                      </span>
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      📞 :<span>{order?.assignDeliveryBoy?.mobile}</span>
+                    </p>
+                  </div>
+                </div>
+                <a
+                  href={`tel:${order.assignDeliveryBoy.mobile}`}
+                  className="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg hover:bg-blue-700 transition"
+                >
+                  Call
+                </a>
+              </div>
+            )}
           </div>
         </div>
         <div className="flex flex-col items-start md:items-end gap-2">
@@ -102,7 +167,9 @@ function AdminOrderCard({ order }: { order: IOrder }) {
         >
           <span className="flex items-center gap-2 justify-center">
             <Package size={16} className="text-green-600" />
-            {expanded ? "Hide Order Items" : `View ${order?.items?.length} Items`}
+            {expanded
+              ? "Hide Order Items"
+              : `View ${order?.items?.length} Items`}
           </span>
           {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </button>
@@ -158,7 +225,9 @@ function AdminOrderCard({ order }: { order: IOrder }) {
         </div>
         <div>
           Total:{" "}
-          <span className="text-green-600 font-bold">₹{order?.totalAmount}</span>
+          <span className="text-green-600 font-bold">
+            ₹{order?.totalAmount}
+          </span>
         </div>
       </div>
     </motion.div>

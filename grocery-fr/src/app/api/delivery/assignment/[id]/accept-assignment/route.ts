@@ -4,7 +4,7 @@ import DeliverAssignment from "@/models/deliveryAssignment.model";
 import Order from "@/models/order.model";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(
+export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } },
 ) {
@@ -22,6 +22,7 @@ export async function POST(
         { status: 401 },
       );
     }
+    // find delivery boy order(assignment)
     const assignment = await DeliverAssignment.findById(id);
     if (!assignment) {
       return NextResponse.json(
@@ -32,6 +33,7 @@ export async function POST(
         { status: 400 },
       );
     }
+    // if user accepted already then not allow to accept again
     if (assignment.status !== "broadcasted") {
       return NextResponse.json(
         {
@@ -41,6 +43,7 @@ export async function POST(
         { status: 400 },
       );
     }
+    // if already accept then not allow to accept another assignment until complete current assignment
     const alreadyAssigned = await DeliverAssignment.findOne({
       assignTo: deliveryBoyId,
       status: { $nin: ["broadcasted", "completed"] },
@@ -71,6 +74,7 @@ export async function POST(
     }
     order.assignDeliveryBoy = deliveryBoyId;
     await order.save();
+    // if current user accept the assignment then remove that user from another assignment broadcast list
     await DeliverAssignment.updateMany(
       {
         _id: { $ne: assignment._id },

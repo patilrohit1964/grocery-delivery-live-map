@@ -1,4 +1,4 @@
-import { IOrder } from "@/models/order.model";
+import { IUser } from "@/models/user.model";
 import {
   ChevronDown,
   ChevronUp,
@@ -6,7 +6,9 @@ import {
   MapPin,
   Package,
   Truck,
+  UserCheck2,
 } from "lucide-react";
+import mongoose from "mongoose";
 import { motion } from "motion/react";
 import Image from "next/image";
 import { useState } from "react";
@@ -23,6 +25,38 @@ export const getStatusColor = (status: string) => {
       return "bg-gray-100 text-gray-700 border-gray-300";
   }
 };
+interface IOrder {
+  _id?: mongoose.Types.ObjectId;
+  user: mongoose.Types.ObjectId;
+  items: [
+    {
+      grocery: mongoose.Types.ObjectId;
+      name: string;
+      price: string;
+      unit: string;
+      image: string;
+      quantity: number;
+    },
+  ];
+  isPaid: boolean;
+  totalAmount: number;
+  paymentMethod: "cod" | "online";
+  address: {
+    fullName: string;
+    city: string;
+    state: string;
+    pincode: string;
+    fullAddress: string;
+    mobile: string;
+    latitude: number;
+    longitude: number;
+  };
+  assignment?: mongoose.Types.ObjectId;
+  assignDeliveryBoy?: IUser;
+  status: "pending" | "out of delivery" | "delivered";
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 function UserOrderCard({ order }: { order: IOrder }) {
   const [expanded, setExpanded] = useState(false);
   return (
@@ -143,6 +177,31 @@ function UserOrderCard({ order }: { order: IOrder }) {
             </span>
           </div>
         </div>
+        {order?.assignDeliveryBoy && (
+          <div className="mt-4 bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3 text-sm text-gray-700">
+              <UserCheck2 className="text-blue-600" size={18} />
+              <div className="font-semibold text-gray-800">
+                <p>
+                  Assigned To:{" "}
+                  <span>
+                    {order?.assignDeliveryBoy?.name.charAt(0).toUpperCase() +
+                      order.assignDeliveryBoy.name.slice(1)}
+                  </span>
+                </p>
+                <p className="text-xs text-gray-600">
+                  📞 :<span>{order?.assignDeliveryBoy?.mobile}</span>
+                </p>
+              </div>
+            </div>
+            <a
+              href={`tel:${order.assignDeliveryBoy.mobile}`}
+              className="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg hover:bg-blue-700 transition"
+            >
+              Call
+            </a>
+          </div>
+        )}
       </div>
     </motion.div>
   );
