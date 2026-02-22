@@ -1,9 +1,10 @@
-'use client'
+"use client";
+
+import userGetMe from "@/hooks/userGetMe";
 
 const AdminDashboard = () => {
-  return (
-    <div>AdminDashboard</div>
-  )
-}
+  userGetMe();
+  return <div>AdminDashboard</div>;
+};
 
-export default AdminDashboard
+export default AdminDashboard;

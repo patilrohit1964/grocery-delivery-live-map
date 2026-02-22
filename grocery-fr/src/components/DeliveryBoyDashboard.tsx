@@ -1,27 +1,61 @@
 "use client";
+import userGetMe from "@/hooks/userGetMe";
 import { getSocket } from "@/lib/socket";
+import { RootState } from "@/redux/store";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import LiveMap from "./LiveMap";
+interface ILocation {
+  latitude: number;
+  longitude: number;
+}
 const DeliveryBoyDashboard = () => {
+  userGetMe();
   const [assignments, setAssignments] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  useEffect(() => {
-    const fetchAssignments = async () => {
-      try {
-        const { data } = await axios.get("/api/delivery/get-assignments");
-        if (!data.success) {
-          toast.error(data?.message || "assignments not found");
-          return;
-        }
-        setAssignments(data?.assignments);
-      } catch (error) {
-        console.log(error, "error while geting assignments");
+  const [activeOrder, setActiveOrder] = useState<any>(null);
+  const [userLocation, setUserLocation] = useState<ILocation>({
+    latitude: 0,
+    longitude: 0,
+  });
+  const [deliveryLocation, setDeliveryLocation] = useState<ILocation>({
+    latitude: 0,
+    longitude: 0,
+  });
+  const { userData } = useSelector((state: RootState) => state.user);
+  const fetchAssignments = async () => {
+    try {
+      const { data } = await axios.get("/api/delivery/get-assignments");
+      if (!data.success) {
+        toast.error(data?.message || "assignments not found");
+        return;
       }
-    };
-    fetchAssignments();
+      setAssignments(data?.assignments);
+    } catch (error) {
+      console.log(error, "error while geting assignments");
+    }
+  };
+  useEffect(() => {
+    const socket = getSocket();
+    if (!userData?._id) return;
+    if (!navigator.geolocation) return;
+    const watcher = navigator.geolocation.watchPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        socket.emit("updateLocation", {
+          userId: userData?._id,
+          latitude,
+          longitude,
+        });
+      },
+      (error) => console.log(error),
+      { enableHighAccuracy: true },
+    );
+    return () => navigator.geolocation.clearWatch(watcher);
   }, []);
   useEffect((): any => {
     const socket = getSocket();
@@ -31,6 +65,7 @@ const DeliveryBoyDashboard = () => {
     });
     return () => socket.off("new-assignment");
   }, []);
+
   const handleAcceptOrder = async (id: string) => {
     setLoading(true);
     try {
@@ -49,6 +84,44 @@ const DeliveryBoyDashboard = () => {
       setLoading(false);
     }
   };
+
+  const fetchCurrentOrder = async () => {
+    try {
+      const { data } = await axios.get("/api/delivery/current-order");
+      if (!data.success) {
+        toast.error(data?.message || "No current order assigned");
+        return;
+      }
+      setActiveOrder(data.data);
+      setUserLocation({
+        latitude: data?.data.order?.address?.latitude,
+        longitude: data.data?.order?.address?.longitude,
+      });
+      // console.log(data, "current order data");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCurrentOrder();
+    fetchAssignments();
+  }, [userData]);
+
+  if (activeOrder && userLocation) {
+    return (
+      <div className="p-4 pt-30 min-h-screen bg-gray-50">
+        <div className="max-w-3xl mx-auto">
+          <h1 className="text-3xl font-bold text-green-700 mb-2">
+            Active Delivery
+          </h1>
+          <p>Order#: {activeOrder.order._id.slice(-6)}</p>
+          <div className="rounded-xl border shadow-lg overflow-hidden mb-6"></div>
+          <LiveMap />
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="w-full min-h-screen bg-gray-50 p-4">
       <div className="max-w-3xl mx-auto">
