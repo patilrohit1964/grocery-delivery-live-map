@@ -366,6 +366,7 @@ const Checkout = () => {
             {/* map div */}
             <div className="relative mt-6 h-82.5 rounded-xl overflow-hidden border border-gray-200 shadow-inner">
               {position && (
+                // using this we import and use leaflet map in our project and set position of marker according to user location
                 <MapContainer
                   center={position as LatLngExpression}
                   zoom={13}

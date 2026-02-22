@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import LiveMap from "./LiveMap";
-interface ILocation {
+export interface ILocation {
   latitude: number;
   longitude: number;
 }
@@ -39,6 +39,8 @@ const DeliveryBoyDashboard = () => {
       console.log(error, "error while geting assignments");
     }
   };
+
+  // track live location code of delivery boy
   useEffect(() => {
     const socket = getSocket();
     if (!userData?._id) return;
@@ -46,6 +48,10 @@ const DeliveryBoyDashboard = () => {
     const watcher = navigator.geolocation.watchPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
+        setDeliveryLocation({
+          latitude: latitude,
+          longitude: longitude,
+        });
         socket.emit("updateLocation", {
           userId: userData?._id,
           latitude,
@@ -56,7 +62,8 @@ const DeliveryBoyDashboard = () => {
       { enableHighAccuracy: true },
     );
     return () => navigator.geolocation.clearWatch(watcher);
-  }, []);
+  }, [userData?._id]);
+
   useEffect((): any => {
     const socket = getSocket();
     // if listen then use on for socket in frontend
@@ -117,7 +124,7 @@ const DeliveryBoyDashboard = () => {
           </h1>
           <p>Order#: {activeOrder.order._id.slice(-6)}</p>
           <div className="rounded-xl border shadow-lg overflow-hidden mb-6"></div>
-          <LiveMap />
+          <LiveMap userLocation={userLocation} deliveryLocation={deliveryLocation} />
         </div>
       </div>
     );
