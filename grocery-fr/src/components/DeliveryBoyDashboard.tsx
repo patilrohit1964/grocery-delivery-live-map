@@ -27,6 +27,7 @@ const DeliveryBoyDashboard = () => {
     longitude: 0,
   });
   const { userData } = useSelector((state: RootState) => state.user);
+  // get all delivery boy orders
   const fetchAssignments = async () => {
     try {
       const { data } = await axios.get("/api/delivery/get-assignments");
@@ -45,6 +46,7 @@ const DeliveryBoyDashboard = () => {
     const socket = getSocket();
     if (!userData?._id) return;
     if (!navigator.geolocation) return;
+    // watch delivery boy live location
     const watcher = navigator.geolocation.watchPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
@@ -52,6 +54,7 @@ const DeliveryBoyDashboard = () => {
           latitude: latitude,
           longitude: longitude,
         });
+        // update location using socket
         socket.emit("updateLocation", {
           userId: userData?._id,
           latitude,
@@ -124,7 +127,10 @@ const DeliveryBoyDashboard = () => {
           </h1>
           <p>Order#: {activeOrder.order._id.slice(-6)}</p>
           <div className="rounded-xl border shadow-lg overflow-hidden mb-6"></div>
-          <LiveMap userLocation={userLocation} deliveryLocation={deliveryLocation} />
+          <LiveMap
+            userLocation={userLocation}
+            deliveryLocation={deliveryLocation}
+          />
         </div>
       </div>
     );

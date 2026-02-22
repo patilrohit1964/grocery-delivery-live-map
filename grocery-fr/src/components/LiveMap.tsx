@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ILocation } from "./DeliveryBoyDashboard";
 import L, { LatLngExpression } from "leaflet";
 import {
@@ -7,11 +7,21 @@ import {
   Polyline,
   Popup,
   TileLayer,
+  useMap,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 interface IProp {
   userLocation: ILocation;
   deliveryLocation: ILocation;
+}
+function Recenter({ positions }: { positions: [number, number] }) {
+  const map = useMap();
+  useEffect(() => {
+    if (positions[0] !== 0 && positions[1] !== 0) {
+      map.setView(positions, map.getZoom(), { animate: true });
+    }
+  }, [positions, map]);
+  return null;
 }
 const LiveMap = ({ userLocation, deliveryLocation }: IProp) => {
   const deliveryBoyIcon = L.icon({
@@ -32,12 +42,15 @@ const LiveMap = ({ userLocation, deliveryLocation }: IProp) => {
       : [];
   return (
     <div className="w-full h-125 rounded-xl overflow-hidden shadow relative">
+      {/* parent of map  */}
       <MapContainer
         center={center as LatLngExpression}
         zoom={13}
         scrollWheelZoom={false}
         className="w-full h-full"
       >
+        <Recenter positions={center as any} />
+        {/* using this we can show map */}
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -47,7 +60,7 @@ const LiveMap = ({ userLocation, deliveryLocation }: IProp) => {
           position={[userLocation.latitude, userLocation.longitude]}
           icon={userIcon}
         >
-            {/* using this we can show popup when click on that icons */}
+          {/* using this we can show popup when click on that icons */}
           <Popup>delivery address</Popup>
         </Marker>
         {deliveryLocation && (

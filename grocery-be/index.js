@@ -25,14 +25,18 @@ io.on("connection", (socket) => {
     });
   });
   socket.on("updateLocation", async ({ userId, latitude, longitude }) => {
+    const location = {
+      type: "Point",
+      coordinates: [longitude, latitude],
+    };
     await axios.post(
       `${process.env.NEXT_BASE_URL}/api/socket/update-location`,
       {
         userId,
-        latitude,
-        longitude,
+        location,
       },
     );
+    io.emit("update-deliveryBoy-location", { userId, location });
   });
   socket.on("disconnect", () => {
     console.log("user disconnected", socket.id);

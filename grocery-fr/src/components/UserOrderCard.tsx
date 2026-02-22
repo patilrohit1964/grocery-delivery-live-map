@@ -11,6 +11,7 @@ import {
 import mongoose from "mongoose";
 import { motion } from "motion/react";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 
 export const getStatusColor = (status: string) => {
@@ -179,30 +180,34 @@ function UserOrderCard({ order }: { order: IOrder }) {
         </div>
         {order?.assignDeliveryBoy && (
           <>
-          <div className="mt-4 bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3 text-sm text-gray-700">
-              <UserCheck2 className="text-blue-600" size={18} />
-              <div className="font-semibold text-gray-800">
-                <p>
-                  Assigned To:{" "}
-                  <span>
-                    {order?.assignDeliveryBoy?.name.charAt(0).toUpperCase() +
-                      order.assignDeliveryBoy.name.slice(1)}
-                  </span>
-                </p>
-                <p className="text-xs text-gray-600">
-                  📞 :<span>{order?.assignDeliveryBoy?.mobile}</span>
-                </p>
+            <div className="mt-4 bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3 text-sm text-gray-700">
+                <UserCheck2 className="text-blue-600" size={18} />
+                <div className="font-semibold text-gray-800">
+                  <p>
+                    Assigned To:{" "}
+                    <span>
+                      {order?.assignDeliveryBoy?.name.charAt(0).toUpperCase() +
+                        order.assignDeliveryBoy.name.slice(1)}
+                    </span>
+                  </p>
+                  <p className="text-xs text-gray-600">
+                    📞 :<span>{order?.assignDeliveryBoy?.mobile}</span>
+                  </p>
+                </div>
               </div>
+              <a
+                href={`tel:${order.assignDeliveryBoy.mobile}`}
+                className="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg hover:bg-blue-700 transition"
+              >
+                Call
+              </a>
             </div>
-            <a
-              href={`tel:${order.assignDeliveryBoy.mobile}`}
-              className="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg hover:bg-blue-700 transition"
-            >
-              Call
-            </a>
-          </div>
-          <button className="w-full flex items-center justify-center gap-2 bg-green-600 text-white font-semibold px-4 py-2 rounded-xl shadow hover:bg-green-700 transition cursor-pointer">Track Your Order</button>
+            <Link href={`/user/track-user/${order._id}`}>
+              <button className="w-full flex items-center justify-center gap-2 bg-green-600 text-white font-semibold px-4 py-2 rounded-xl shadow hover:bg-green-700 transition cursor-pointer">
+                Track Your Order
+              </button>
+            </Link>
           </>
         )}
       </div>
