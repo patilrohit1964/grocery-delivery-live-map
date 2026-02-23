@@ -15,7 +15,6 @@ const io = new Server(server, {
 });
 // if we want listen any event that coming from frontend then use (on) method for that
 // jevha pan aapan kahi listen karto tevha he socket ch (on) method use krych aani jevha pan konta emit karto tevha io ch (on) use krych
-
 io.on("connection", (socket) => {
   console.log("user connected", socket.id);
   socket.on("identity", async (userId) => {

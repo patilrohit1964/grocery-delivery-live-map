@@ -5,15 +5,10 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     await connectDb();
-    const { userId, latitude, longitude } = await req.json();
+    const { userId, location } = await req.json();
     const user = await User.findByIdAndUpdate(
       userId,
-      {
-        location: {
-          type: "Point",
-          coordinates: [longitude, latitude],
-        },
-      },
+      location,
       { new: true, runValidators: true }, //To enable validation during update, we use
     );
 

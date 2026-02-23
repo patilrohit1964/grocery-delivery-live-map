@@ -61,7 +61,6 @@ export default function TrackOrder() {
     if (!orderId) return;
     const fetchOrderDetails = async () => {
       const { data } = await axios.get(`/api/user/get-order/${orderId}`);
-      console.log(data.data);
       setOrder(data.data);
       // ordering must be longitude first and latitude second
       setUserLocation({
@@ -81,6 +80,7 @@ export default function TrackOrder() {
     const socket = getSocket();
     // update delivery boy live location with socket
     socket.on("update-deliveryBoy-location", (data) => {
+      console.log(data,'data scoket')
       setDeliveryBoyLocation({
         longitude: data.location.coordinates[0],
         latitude: data.location.coordinates[1],
@@ -97,21 +97,23 @@ export default function TrackOrder() {
               <ArrowLeft className="text-green-700" size={20} />
             </button>
           </Link>
-          <h2 className="text-xl font-bold">Track Order</h2>
-          <p className="text-sm text-gray-600">
-            order#{order?._id?.toString().slice(-6)}{" "}
-            <span className="text-green-700 font-semibold">
-              {order?.status}
-            </span>
-          </p>
+          <div>
+            <h2 className="text-xl font-bold">Track Order</h2>
+            <p className="text-sm text-gray-600">
+              order#{order?._id?.toString().slice(-6)}{" "}
+              <span className="text-green-700 font-semibold">
+                {order?.status}
+              </span>
+            </p>
+          </div>
         </div>
-      </div>
-      <div className="px-4 mt-6">
-        <div className="rounded-3xl overflow-hidden border shadow">
-          <LiveMap
-            userLocation={userLocation}
-            deliveryLocation={deliveryBoyLocation}
-          />
+        <div className="px-4 mt-6">
+          <div className="rounded-3xl overflow-hidden border shadow">
+            <LiveMap
+              userLocation={userLocation}
+              deliveryLocation={deliveryBoyLocation}
+            />
+          </div>
         </div>
       </div>
     </div>
