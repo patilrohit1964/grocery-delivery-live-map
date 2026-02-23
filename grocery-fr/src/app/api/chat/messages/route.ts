@@ -1,25 +1,29 @@
 import connectDb from "@/lib/db";
 import ChatRoom from "@/models/chat.model";
+import Message from "@/models/message.model";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
     await connectDb();
-    const { orderId, deliveryBoyId, userId } = await req.json();
-    let room = await ChatRoom.findOne({ orderId });
+    const { roomId } = await req.json();
+    let room = await Message.findById(roomId);
     // if room not found create new room
     if (!room) {
-      room = await ChatRoom.create({
-        orderId,
-        deliveryBoyId,
-        userId,
-      });
+      return NextResponse.json(
+        {
+          success: false,
+          message: "room not found",
+        },
+        { status: 400 },
+      );
     }
+    const messages = await Message.find({ roomId: room._id });
     return NextResponse.json(
       {
         success: true,
-        message: "room created successfully",
-        data: room,
+        message: "messages fetched",
+        data: messages,
       },
       { status: 201 },
     );
