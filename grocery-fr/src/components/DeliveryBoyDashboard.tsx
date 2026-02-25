@@ -118,7 +118,6 @@ const DeliveryBoyDashboard = () => {
     fetchCurrentOrder();
     fetchAssignments();
   }, [userData]);
-  console.log(activeOrder, "asfdjlkdsf");
   if (activeOrder && userLocation) {
     return (
       <div className="p-4 pt-30 min-h-screen bg-gray-50">

@@ -35,6 +35,11 @@ io.on("connection", (socket) => {
         location,
       },
     );
+    socket.on("join-room", (roomId) => {
+      // this help to find unique and specific room for specific user
+      console.log(roomId,'ksd')
+      socket.join(roomId);
+    });
     io.emit("update-deliveryBoy-location", { userId, location });
   });
   socket.on("disconnect", () => {
