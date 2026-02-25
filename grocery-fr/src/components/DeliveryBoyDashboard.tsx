@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import LiveMap from "./LiveMap";
+import DeliveryChat from "./DeliveryChat";
 export interface ILocation {
   latitude: number;
   longitude: number;
@@ -117,7 +118,7 @@ const DeliveryBoyDashboard = () => {
     fetchCurrentOrder();
     fetchAssignments();
   }, [userData]);
-
+  console.log(activeOrder, "asfdjlkdsf");
   if (activeOrder && userLocation) {
     return (
       <div className="p-4 pt-30 min-h-screen bg-gray-50">
@@ -130,6 +131,10 @@ const DeliveryBoyDashboard = () => {
           <LiveMap
             userLocation={userLocation}
             deliveryLocation={deliveryLocation}
+          />
+          <DeliveryChat
+            orderId={activeOrder.order._id.toString()}
+            deliveryBoyId={userData?._id?.toString()!}
           />
         </div>
       </div>

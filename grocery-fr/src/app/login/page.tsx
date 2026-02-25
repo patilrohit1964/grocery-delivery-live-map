@@ -6,7 +6,9 @@ import { motion } from "motion/react";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [form, setForm] = useState({
@@ -15,13 +17,23 @@ const Login = () => {
   });
   const [showPass, setShowPass] = useState(false);
   const [forgotPass, setForgotPass] = useState(false);
+  const router = useRouter();
   const handleLogin = async (e: FormEvent) => {
-    e.preventDefault();
-    await signIn("credentials", {
-      email: form?.email,
-      password: form.password,
-      callbackUrl: "/",
-    });
+    try {
+      e.preventDefault();
+      const res = await signIn("credentials", {
+        email: form?.email,
+        password: form.password,
+        redirect: false,
+      });
+      if (res.error) {
+        return toast.error("invalid credentials");
+      }
+      toast.success("login successful");
+      router.push("/");
+    } catch (error) {
+      console.log(error, "error while login");
+    }
   };
 
   return (
