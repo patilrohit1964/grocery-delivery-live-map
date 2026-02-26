@@ -41,7 +41,7 @@ const LiveMap = ({ userLocation, deliveryLocation }: IProp) => {
         ]
       : [];
   return (
-    <div className="w-full h-125 rounded-xl overflow-hidden shadow relative">
+    <div className="w-full h-125 rounded-xl overflow-hidden shadow relative z-40">
       {/* parent of map  */}
       <MapContainer
         center={center as LatLngExpression}

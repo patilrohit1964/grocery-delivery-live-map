@@ -35,12 +35,16 @@ io.on("connection", (socket) => {
         location,
       },
     );
-    socket.on("join-room", (roomId) => {
-      // this help to find unique and specific room for specific user
-      console.log(roomId,'ksd')
-      socket.join(roomId);
-    });
     io.emit("update-deliveryBoy-location", { userId, location });
+  });
+  socket.on("join-room", (roomId) => {
+    // this help to find unique and specific room for specific user
+    socket.join(roomId);
+  });
+  // this is help for message get
+  socket.on("send-message", async (message) => {
+    await axios.post(`${process.env.NEXT_BASE_URL}/api/chat/save`, message);
+    io.to(message.roomId).emit();
   });
   socket.on("disconnect", () => {
     console.log("user disconnected", socket.id);

@@ -126,11 +126,12 @@ const DeliveryBoyDashboard = () => {
             Active Delivery
           </h1>
           <p>Order#: {activeOrder.order._id.slice(-6)}</p>
-          <div className="rounded-xl border shadow-lg overflow-hidden mb-6"></div>
-          <LiveMap
-            userLocation={userLocation}
-            deliveryLocation={deliveryLocation}
-          />
+          <div className="rounded-xl border shadow-lg overflow-hidden mb-6">
+            <LiveMap
+              userLocation={userLocation}
+              deliveryLocation={deliveryLocation}
+            />
+          </div>
           <DeliveryChat
             orderId={activeOrder.order._id.toString()}
             deliveryBoyId={userData?._id?.toString()!}

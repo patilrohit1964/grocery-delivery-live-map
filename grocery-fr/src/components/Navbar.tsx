@@ -62,7 +62,7 @@ const Navbar = ({ user }: { user: IUser }) => {
             // this type help to add animation on our element,damping help us to control bounce of type animation
             transition={{ type: "spring", stiffness: 100, damping: 14 }}
             exit={{ x: -100 }}
-            className="fixed top-0  left-0 h-full w-[75%] sm:w-[60%] z-999 bg-linear-to-b from-green-800/90 via-green-700/80 to-green-900/90 backdrop-blur-xl border-r border-green-400/20 shadow-[0_0_50px_-10px_rgba(0,255,100,0.3)] flex flex-col p-6 text-white"
+            className="fixed top-0 left-0 h-full w-[75%] sm:w-[60%] z-2000 bg-linear-to-b from-green-800/90 via-green-700/80 to-green-900/90 backdrop-blur-xl border-r border-green-400/20 shadow-[0_0_50px_-10px_rgba(0,255,100,0.3)] flex flex-col p-6 text-white"
           >
             <div className="flex items-center justify-between mb-2">
               <h1 className="font-extrabold text-2xl tracking-wide text-white/90">
