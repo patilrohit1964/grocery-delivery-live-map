@@ -5,6 +5,7 @@ import { Send } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+import moment from "moment";
 interface IProps {
   orderId: string;
   deliveryBoyId: string;
@@ -12,7 +13,7 @@ interface IProps {
 const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
   const [newMessage, setNewMessage] = useState<string>("");
   const [messages, setMessages] = useState<IMessage[]>();
-  const autoScroll = useRef(null);
+  const autoScroll = useRef<HTMLDivElement>(null);
 
   // join room
   useEffect(() => {
@@ -39,6 +40,8 @@ const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
     };
     getAllMessages();
   }, []);
+
+  // send message
   const sendMessage = () => {
     const message = {
       roomId: orderId,
@@ -56,12 +59,14 @@ const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
       setMessages((prev) => [...prev!, message]);
     });
     setNewMessage("");
-    autoScroll?.current?.scrollIntoView({ behavior: "smooth" });
   };
+  useEffect(() => {
+    autoScroll?.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   return (
     <div className="bg-white rounded-3xl shadow-lg border p-4 h-107.5 flex flex-col">
-      <div className="flex-1 overflow-y-auto p-2 space-y-3">
+      <div className="flex-1 overflow-y-auto p-2 space-y-3 message-scroll">
         <AnimatePresence>
           {messages?.map((msg, idx) => {
             const isCurrentUser =
