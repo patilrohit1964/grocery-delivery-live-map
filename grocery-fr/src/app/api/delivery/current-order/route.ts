@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import connectDb from "@/lib/db";
+import "@/lib/registerModels";
 import DeliverAssignment from "@/models/deliveryAssignment.model";
 import { NextResponse } from "next/server";
 // get cuurent delivery boy orders

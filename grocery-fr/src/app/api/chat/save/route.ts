@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       {
         success: true,
         message: "chat saved",
-        data: room,
+        data: message,
       },
       { status: 201 },
     );
