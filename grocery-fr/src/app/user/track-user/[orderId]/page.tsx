@@ -1,17 +1,20 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import mongoose from "mongoose";
 import { IUser } from "@/models/user.model";
 import { ILocation } from "@/components/DeliveryBoyDashboard";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Send } from "lucide-react";
 import Link from "next/link";
 import LiveMap from "@/components/LiveMap";
 import { getSocket } from "@/lib/socket";
+import { IMessage } from "@/models/message.model";
+import { toast } from "react-toastify";
+import { motion, AnimatePresence } from "motion/react";
 interface IOrder {
   _id?: mongoose.Types.ObjectId;
   user: mongoose.Types.ObjectId;
@@ -48,6 +51,9 @@ export default function TrackOrder() {
   const { orderId } = useParams();
   const { userData } = useSelector((state: RootState) => state.user);
   const [order, setOrder] = useState<IOrder>();
+  const [newMessage, setNewMessage] = useState<string>("");
+  const [messages, setMessages] = useState<IMessage[]>();
+  const autoScroll = useRef<HTMLDivElement>(null);
   const [userLocation, setUserLocation] = useState<ILocation>({
     longitude: 0,
     latitude: 0,
@@ -57,6 +63,8 @@ export default function TrackOrder() {
     longitude: 0,
     latitude: 0,
   });
+
+  // get live orders details
   useEffect(() => {
     if (!orderId) return;
     const fetchOrderDetails = async () => {
@@ -76,11 +84,12 @@ export default function TrackOrder() {
 
     fetchOrderDetails();
   }, [orderId]);
+
+  // update delivery boy live location with socket
   useEffect((): any => {
     const socket = getSocket();
     // update delivery boy live location with socket
     socket.on("update-deliveryBoy-location", (data) => {
-      console.log(data,'data scoket')
       setDeliveryBoyLocation({
         longitude: data.location.coordinates[0],
         latitude: data.location.coordinates[1],
@@ -88,6 +97,60 @@ export default function TrackOrder() {
     });
     return () => socket.off("update-deliveryBoy-location");
   }, [order]);
+
+  // get all messages of rooms and chats
+  useEffect(() => {
+    const getAllMessages = async () => {
+      try {
+        const { data } = await axios.post(`/api/chat/messages`, {
+          roomId: orderId,
+        });
+        if (!data.success) {
+          toast.error(data.message || "error while getting message");
+          return;
+        }
+        setMessages(data.data);
+        toast.success(data.message || "error while getting message");
+      } catch (error) {
+        console.log(error, "whlile fetching get all messages");
+      }
+    };
+    getAllMessages();
+  }, []);
+
+  // send message function get live msg and show live msg
+  const sendMessage = () => {
+    const message = {
+      roomId: orderId,
+      text: newMessage,
+      senderId: userData?._id,
+      time: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      }),
+    };
+    const socket = getSocket();
+    socket.emit("send-message", message);
+    socket.on("send-message", (message) => {
+      setMessages((prev) => [...prev!, message]);
+    });
+    setNewMessage("");
+  };
+
+  // auto scroll when new message arrive
+  useEffect(() => {
+    autoScroll?.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const handleTyping = (e: ChangeEvent<HTMLInputElement>) => {
+    const message = {
+      roomId: orderId,
+    };
+    setNewMessage(e.target.value);
+    const socket = getSocket();
+    socket.emit("typing", message);
+  };
   return (
     <div className="w-full min-h-screen bg-linear-to-b from-green-50 to-white">
       <div className="max-w-2xl mx-auto pb-24">
@@ -113,6 +176,54 @@ export default function TrackOrder() {
               userLocation={userLocation}
               deliveryLocation={deliveryBoyLocation}
             />
+          </div>
+        </div>
+        <div className="bg-white rounded-3xl shadow-lg border p-4 h-107.5 flex flex-col mt-4">
+          <div className="flex-1 overflow-y-auto p-2 space-y-3 message-scroll">
+            <AnimatePresence>
+              {messages?.map((msg, idx) => {
+                const isCurrentUser =
+                  msg.senderId.toString() === userData?._id!.toString();
+                return (
+                  <motion.div
+                    key={msg._id?.toString()}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className={`flex ${isCurrentUser ? "justify-end" : "justify-start"}`}
+                  >
+                    <div
+                      className={`px-4 py-2 max-w-[75%] rounded-2xl shadow ${isCurrentUser ? "bg-green-600 text-white rounded-br-none" : "bg-gray-100 text-gray-800 rounded-bl-none"}`}
+                    >
+                      <p>{msg.text}</p>
+                      <p className="text-[10px] opacity-70 mt-1 text-right">
+                        {msg.time}
+                      </p>
+                      <div ref={autoScroll} />
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </div>
+          <div className="flex gap-2 mt-3 border-t pt-3">
+            <input
+              type="text"
+              className="flex-1 bg-gray-100 px-4 py-2 rounded-xl outline-none focus:ring-2 focus:ring-green-500"
+              placeholder="type message..."
+              onChange={handleTyping}
+              value={newMessage}
+            />
+            <button
+              onClick={sendMessage}
+              disabled={!newMessage}
+              className={`p-3 rounded-xl text-white ${!newMessage ? "cursor-not-allowed bg-green-400" : "cursor-pointer bg-green-600 hover:bg-green-700 text-white group"}`}
+            >
+              <Send
+                size={18}
+                className="group-hover:rotate-45 transition-all duration-500"
+              />
+            </button>
           </div>
         </div>
       </div>

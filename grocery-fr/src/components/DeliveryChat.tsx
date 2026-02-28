@@ -3,9 +3,8 @@ import { IMessage } from "@/models/message.model";
 import axios from "axios";
 import { Send } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import React, { useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import moment from "moment";
 interface IProps {
   orderId: string;
   deliveryBoyId: string;
@@ -21,7 +20,7 @@ const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
     socket.emit("join-room", orderId);
   }, []);
 
-  // get all messages of rooms
+  // get all messages of rooms and chats
   useEffect(() => {
     const getAllMessages = async () => {
       try {
@@ -41,7 +40,7 @@ const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
     getAllMessages();
   }, []);
 
-  // send message
+  // send message function get live msg and show live msg
   const sendMessage = () => {
     const message = {
       roomId: orderId,
@@ -60,10 +59,20 @@ const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
     });
     setNewMessage("");
   };
+
+  // auto scroll when new message arrive
   useEffect(() => {
     autoScroll?.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const handleTyping = (e: ChangeEvent<HTMLInputElement>) => {
+    const message = {
+      roomId: orderId,
+    };
+    setNewMessage(e.target.value);
+    const socket = getSocket();
+    socket.emit("typing", message);
+  };
   return (
     <div className="bg-white rounded-3xl shadow-lg border p-4 h-107.5 flex flex-col">
       <div className="flex-1 overflow-y-auto p-2 space-y-3 message-scroll">
@@ -98,12 +107,12 @@ const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
           type="text"
           className="flex-1 bg-gray-100 px-4 py-2 rounded-xl outline-none focus:ring-2 focus:ring-green-500"
           placeholder="type message..."
-          onChange={(e) => setNewMessage(e.target.value)}
+          onChange={handleTyping}
           value={newMessage}
         />
         <button
           onClick={sendMessage}
-          className="bg-green-600 hover:bg-green-700 p-3 rounded-xl text-white group cursor-pointer"
+          className={`p-3 rounded-xl text-white ${!newMessage ? "cursor-not-allowed bg-green-400" : "cursor-pointer bg-green-600 hover:bg-green-700 text-white group"}`}
         >
           <Send
             size={18}

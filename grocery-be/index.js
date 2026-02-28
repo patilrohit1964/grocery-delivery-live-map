@@ -46,6 +46,11 @@ io.on("connection", (socket) => {
     await axios.post(`${process.env.NEXT_BASE_URL}/api/chat/save`, message);
     io.to(message.roomId).emit("send-message", message);
   });
+
+  // for live typing
+  socket.on("typing",({roomId})=>{
+    io.to(roomId).emit('typing',roomId)
+  })
   socket.on("disconnect", () => {
     console.log("user disconnected", socket.id);
   });  
