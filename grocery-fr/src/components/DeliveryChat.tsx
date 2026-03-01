@@ -12,13 +12,9 @@ interface IProps {
 const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
   const [newMessage, setNewMessage] = useState<string>("");
   const [messages, setMessages] = useState<IMessage[]>();
-  const [suggestions, setSuggestions] = useState([
-    "hello",
-    "how are you",
-    "thank you",
-  ]);
+  const [suggestions, setSuggestions] = useState([]);
   const autoScroll = useRef<HTMLDivElement>(null);
-
+  const [suggestionLoading, setSuggestionLoading] = useState<boolean>(false);
   // join room
   useEffect(() => {
     const socket = getSocket();
@@ -79,47 +75,70 @@ const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
     socket.emit("typing", message);
   };
 
-  // generate suggestion
+  // generate suggestion of ai
   const handleAiSuggestions = async () => {
+    setSuggestionLoading(true);
     try {
       // this help last item of js array new technic for getting last item of array
-      const lastMsg = messages?.at(-1);
+      const lastMsg = messages
+        ?.filter((msg) => msg.senderId.toString() !== deliveryBoyId.toString())
+        ?.at(-1);
       const { data } = await axios.post(`/api/chat/ai-suggestions`, {
-        message: newMessage,
-        role: "deliveryBoy",
+        message: lastMsg?.text,
+        role: "delivery_boy",
       });
-      const aiRes = data.aiRes.candidates[0].content.parts[0].text;
+      setSuggestionLoading(false);
+      setSuggestions(data.aiResData);
     } catch (error) {
       console.log(error, "error while geting ai suggestions");
+      setSuggestionLoading(false);
+    } finally {
+      setSuggestionLoading(false);
     }
   };
   return (
     <div className="bg-white rounded-3xl shadow-lg border p-4 h-107.5 flex flex-col">
-      <div className="flex justify-between items-center mb-3">
-        <span className="font-semibold text-gray-700 text-sm">
-          AI Suggestions
-        </span>
-        <motion.button
-          whileTap={{ scale: 0.92 }}
-          className="px-3 py-1 text-xs flex items-center gap-1 bg-purple-100 text-purple-700 rounded-full shadow-sm border border-purple-200 cursor-pointer hover:bg-purple-300 transition-all duration-300"
-          onClick={handleAiSuggestions}
-        >
-          <Sparkle />
-          Quick Replies
-        </motion.button>
-      </div>
-      <div className="flex gap-2 flex-wrap mb-3">
-        {suggestions.map((op, idx) => (
-          <motion.div
-            key={idx}
+      {/* ai suggestion ui */}
+      <div className="border-b border-b-gray-500">
+        <div className="flex justify-between items-center mb-3">
+          <span className="font-semibold text-gray-700 text-sm">
+            AI Suggestions
+          </span>
+          <motion.button
             whileTap={{ scale: 0.92 }}
-            className="px-3 py-1 cursor-pointer text-xs bg-green-50 border border-green-200 text-green-700 rounded-full"
-            onClick={() => setNewMessage(op)}
+            className="px-3 py-1 text-xs flex items-center gap-1 bg-purple-100 text-purple-700 rounded-full shadow-sm border border-purple-200 cursor-pointer hover:bg-purple-300 transition-all duration-300"
+            onClick={handleAiSuggestions}
+            disabled={suggestionLoading}
           >
-            {op}
-          </motion.div>
-        ))}
+            {suggestionLoading ? (
+              <p className="animate-pulse cursor-wait">Generating...</p>
+            ) : (
+              <>
+                <Sparkle />
+                <span>Quick Replies</span>
+              </>
+            )}
+          </motion.button>
+        </div>
+        <div className="flex gap-2 flex-wrap mb-3">
+          {suggestionLoading ? (
+            <p className="animate-pulse">Generating...</p>
+          ) : (
+            suggestions.length > 0 &&
+            suggestions.map((op, idx) => (
+              <motion.div
+                key={idx}
+                whileTap={{ scale: 0.92 }}
+                className="px-3 py-1 cursor-pointer text-xs bg-green-50 border border-green-200 text-green-700 rounded-full"
+                onClick={() => setNewMessage(op)}
+              >
+                {op}
+              </motion.div>
+            ))
+          )}
+        </div>
       </div>
+      {/* chat message show ui */}
       <div className="flex-1 overflow-y-auto p-2 space-y-3 message-scroll">
         <AnimatePresence>
           {messages?.map((msg, idx) => {
@@ -147,6 +166,7 @@ const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
           })}
         </AnimatePresence>
       </div>
+      {/* send message ui */}
       <div className="flex gap-2 mt-3 border-t pt-3">
         <input
           type="text"

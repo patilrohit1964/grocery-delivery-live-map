@@ -44,11 +44,15 @@ Last message: ${message}
       },
     );
     const aiRes = await response.json();
+    // using this access gemini reply o/p
+    const aiResData = aiRes?.candidates?.[0]?.content?.parts[0]?.text
+      .split(",")
+      .map((s: string) => s);
     return NextResponse.json(
       {
         success: true,
         message: "ai message",
-        aiRes,
+        aiResData,
       },
       { status: 200 },
     );

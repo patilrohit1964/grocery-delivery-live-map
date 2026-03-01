@@ -51,13 +51,10 @@ export default function TrackOrder() {
   const { orderId } = useParams();
   const { userData } = useSelector((state: RootState) => state.user);
   const [order, setOrder] = useState<IOrder>();
+  const [suggestionLoading, setSuggestionLoading] = useState<boolean>(false);
   const [newMessage, setNewMessage] = useState<string>("");
   const [messages, setMessages] = useState<IMessage[]>();
-  const [suggestions, setSuggestions] = useState([
-    "hello",
-    "how are you",
-    "thank you",
-  ]);
+  const [suggestions, setSuggestions] = useState([]);
   const autoScroll = useRef<HTMLDivElement>(null);
   const [userLocation, setUserLocation] = useState<ILocation>({
     longitude: 0,
@@ -157,6 +154,27 @@ export default function TrackOrder() {
     socket.emit("typing", message);
   };
 
+  // generate suggestion of ai
+  const handleAiSuggestions = async () => {
+    setSuggestionLoading(true);
+    try {
+      // this help last item of js array new technic for getting last item of array
+      const lastMsg = messages
+        ?.filter((msg) => msg.senderId.toString() !== userData?._id!.toString())
+        ?.at(-1);
+      const { data } = await axios.post(`/api/chat/ai-suggestions`, {
+        message: lastMsg?.text,
+        role: "user",
+      });
+      setSuggestionLoading(false);
+      setSuggestions(data.aiResData);
+    } catch (error) {
+      console.log(error, "error while geting ai suggestions");
+      setSuggestionLoading(false);
+    } finally {
+      setSuggestionLoading(false);
+    }
+  };
   return (
     <div className="w-full min-h-screen bg-linear-to-b from-green-50 to-white">
       <div className="max-w-2xl mx-auto pb-24">
@@ -184,30 +202,46 @@ export default function TrackOrder() {
             />
           </div>
         </div>
-        <div className="bg-white rounded-3xl shadow-lg border p-4 h-107.5 flex flex-col space-y-4">
-          <div className="flex justify-between items-center mb-3">
-            <span className="font-semibold text-gray-700 text-sm">
-              AI Suggestions
-            </span>
-            <motion.button
-              whileTap={{ scale: 0.92 }}
-              className="px-3 py-1 text-xs flex items-center gap-1 bg-purple-100 text-purple-700 rounded-full shadow-sm border border-purple-200 cursor-pointer hover:bg-purple-300 transition-all duration-300"
-            >
-              <Sparkle />
-              Quick Replies
-            </motion.button>
-          </div>
-          <div className="flex gap-2 flex-wrap mb-3">
-            {suggestions.map((op, idx) => (
-              <motion.div
-                key={idx}
+        <div className="bg-white rounded-3xl shadow-lg border p-4 h-107.5 flex flex-col mt-4">
+          {/* ai suggestion ui */}
+          <div className="border-b border-b-gray-500">
+            <div className="flex justify-between items-center mb-3">
+              <span className="font-semibold text-gray-700 text-sm">
+                AI Suggestions
+              </span>
+              <motion.button
                 whileTap={{ scale: 0.92 }}
-                className="px-3 py-1 cursor-pointer text-xs bg-green-50 border border-green-200 text-green-700 rounded-full"
-                onClick={() => setNewMessage(op)}
+                className="px-3 py-1 text-xs flex items-center gap-1 bg-purple-100 text-purple-700 rounded-full shadow-sm border border-purple-200 cursor-pointer hover:bg-purple-300 transition-all duration-300"
+                onClick={handleAiSuggestions}
+                disabled={suggestionLoading}
               >
-                {op}
-              </motion.div>
-            ))}
+                {suggestionLoading ? (
+                  <p className="animate-pulse cursor-wait">Generating...</p>
+                ) : (
+                  <>
+                    <Sparkle />
+                    <span>Quick Replies</span>
+                  </>
+                )}
+              </motion.button>
+            </div>
+            <div className="flex gap-2 flex-wrap mb-3">
+              {suggestionLoading ? (
+                <p className="animate-pulse">Generating...</p>
+              ) : (
+                suggestions.length > 0 &&
+                suggestions.map((op, idx) => (
+                  <motion.div
+                    key={idx}
+                    whileTap={{ scale: 0.92 }}
+                    className="px-3 py-1 cursor-pointer text-xs bg-green-50 border border-green-200 text-green-700 rounded-full"
+                    onClick={() => setNewMessage(op)}
+                  >
+                    {op}
+                  </motion.div>
+                ))
+              )}
+            </div>
           </div>
           <div className="flex-1 overflow-y-auto p-2 space-y-3 message-scroll">
             <AnimatePresence>
