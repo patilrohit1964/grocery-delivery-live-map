@@ -1,7 +1,7 @@
 import { getSocket } from "@/lib/socket";
 import { IMessage } from "@/models/message.model";
 import axios from "axios";
-import { Send } from "lucide-react";
+import { Send, Sparkle } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -12,6 +12,11 @@ interface IProps {
 const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
   const [newMessage, setNewMessage] = useState<string>("");
   const [messages, setMessages] = useState<IMessage[]>();
+  const [suggestions, setSuggestions] = useState([
+    "hello",
+    "how are you",
+    "thank you",
+  ]);
   const autoScroll = useRef<HTMLDivElement>(null);
 
   // join room
@@ -73,8 +78,48 @@ const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
     const socket = getSocket();
     socket.emit("typing", message);
   };
+
+  // generate suggestion
+  const handleAiSuggestions = async () => {
+    try {
+      // this help last item of js array new technic for getting last item of array
+      const lastMsg = messages?.at(-1);
+      const { data } = await axios.post(`/api/chat/ai-suggestions`, {
+        message: newMessage,
+        role: "deliveryBoy",
+      });
+      const aiRes = data.aiRes.candidates[0].content.parts[0].text;
+    } catch (error) {
+      console.log(error, "error while geting ai suggestions");
+    }
+  };
   return (
     <div className="bg-white rounded-3xl shadow-lg border p-4 h-107.5 flex flex-col">
+      <div className="flex justify-between items-center mb-3">
+        <span className="font-semibold text-gray-700 text-sm">
+          AI Suggestions
+        </span>
+        <motion.button
+          whileTap={{ scale: 0.92 }}
+          className="px-3 py-1 text-xs flex items-center gap-1 bg-purple-100 text-purple-700 rounded-full shadow-sm border border-purple-200 cursor-pointer hover:bg-purple-300 transition-all duration-300"
+          onClick={handleAiSuggestions}
+        >
+          <Sparkle />
+          Quick Replies
+        </motion.button>
+      </div>
+      <div className="flex gap-2 flex-wrap mb-3">
+        {suggestions.map((op, idx) => (
+          <motion.div
+            key={idx}
+            whileTap={{ scale: 0.92 }}
+            className="px-3 py-1 cursor-pointer text-xs bg-green-50 border border-green-200 text-green-700 rounded-full"
+            onClick={() => setNewMessage(op)}
+          >
+            {op}
+          </motion.div>
+        ))}
+      </div>
       <div className="flex-1 overflow-y-auto p-2 space-y-3 message-scroll">
         <AnimatePresence>
           {messages?.map((msg, idx) => {

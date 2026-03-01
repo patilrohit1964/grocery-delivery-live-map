@@ -8,7 +8,7 @@ import { IUser } from "@/models/user.model";
 import { ILocation } from "@/components/DeliveryBoyDashboard";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, Send, Sparkle } from "lucide-react";
 import Link from "next/link";
 import LiveMap from "@/components/LiveMap";
 import { getSocket } from "@/lib/socket";
@@ -53,6 +53,11 @@ export default function TrackOrder() {
   const [order, setOrder] = useState<IOrder>();
   const [newMessage, setNewMessage] = useState<string>("");
   const [messages, setMessages] = useState<IMessage[]>();
+  const [suggestions, setSuggestions] = useState([
+    "hello",
+    "how are you",
+    "thank you",
+  ]);
   const autoScroll = useRef<HTMLDivElement>(null);
   const [userLocation, setUserLocation] = useState<ILocation>({
     longitude: 0,
@@ -151,6 +156,7 @@ export default function TrackOrder() {
     const socket = getSocket();
     socket.emit("typing", message);
   };
+
   return (
     <div className="w-full min-h-screen bg-linear-to-b from-green-50 to-white">
       <div className="max-w-2xl mx-auto pb-24">
@@ -178,7 +184,31 @@ export default function TrackOrder() {
             />
           </div>
         </div>
-        <div className="bg-white rounded-3xl shadow-lg border p-4 h-107.5 flex flex-col mt-4">
+        <div className="bg-white rounded-3xl shadow-lg border p-4 h-107.5 flex flex-col space-y-4">
+          <div className="flex justify-between items-center mb-3">
+            <span className="font-semibold text-gray-700 text-sm">
+              AI Suggestions
+            </span>
+            <motion.button
+              whileTap={{ scale: 0.92 }}
+              className="px-3 py-1 text-xs flex items-center gap-1 bg-purple-100 text-purple-700 rounded-full shadow-sm border border-purple-200 cursor-pointer hover:bg-purple-300 transition-all duration-300"
+            >
+              <Sparkle />
+              Quick Replies
+            </motion.button>
+          </div>
+          <div className="flex gap-2 flex-wrap mb-3">
+            {suggestions.map((op, idx) => (
+              <motion.div
+                key={idx}
+                whileTap={{ scale: 0.92 }}
+                className="px-3 py-1 cursor-pointer text-xs bg-green-50 border border-green-200 text-green-700 rounded-full"
+                onClick={() => setNewMessage(op)}
+              >
+                {op}
+              </motion.div>
+            ))}
+          </div>
           <div className="flex-1 overflow-y-auto p-2 space-y-3 message-scroll">
             <AnimatePresence>
               {messages?.map((msg, idx) => {
