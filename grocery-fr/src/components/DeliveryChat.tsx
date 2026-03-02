@@ -129,7 +129,7 @@ const DeliveryChat = ({ orderId, deliveryBoyId }: IProps) => {
               <motion.div
                 key={idx}
                 whileTap={{ scale: 0.92 }}
-                className="px-3 py-1 cursor-pointer text-xs bg-green-50 border border-green-200 text-green-700 rounded-full"
+                className="px-3 py-1 cursor-pointer text-xs bg-green-100 border border-green-200 text-green-700 rounded-full hover:bg-green-200 transition-all duration-300"
                 onClick={() => setNewMessage(op)}
               >
                 {op}

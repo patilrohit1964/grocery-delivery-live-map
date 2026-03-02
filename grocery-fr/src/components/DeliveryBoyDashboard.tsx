@@ -114,6 +114,17 @@ const DeliveryBoyDashboard = () => {
     }
   };
 
+  useEffect((): any => {
+    const socket = getSocket();
+    socket.on("update-deliveryBoy-location", ({ userId, location }) => {
+      setDeliveryLocation({
+        longitude: location.coordinates[0],
+        latitude: location.coordinates[1],
+      });
+    });
+    return () => socket.off("update-deliveryBoy-location");
+  }, []);
+
   useEffect(() => {
     fetchCurrentOrder();
     fetchAssignments();

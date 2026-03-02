@@ -120,8 +120,22 @@ export default function TrackOrder() {
     getAllMessages();
   }, []);
 
+  // join room
+  useEffect(() => {
+    const socket = getSocket();
+    socket.emit("join-room", orderId);
+    socket.on("send-message", (message) => {
+      if (message.roomId === orderId) {
+        setMessages((prev) => [...prev!, message]);
+      }
+    });
+    return () => {
+      socket.off("send-message");
+    };
+  }, []);
   // send message function get live msg and show live msg
   const sendMessage = () => {
+    const socket = getSocket();
     const message = {
       roomId: orderId,
       text: newMessage,
@@ -132,11 +146,7 @@ export default function TrackOrder() {
         second: "2-digit",
       }),
     };
-    const socket = getSocket();
     socket.emit("send-message", message);
-    socket.on("send-message", (message) => {
-      setMessages((prev) => [...prev!, message]);
-    });
     setNewMessage("");
   };
 

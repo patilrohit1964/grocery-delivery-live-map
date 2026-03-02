@@ -47,7 +47,7 @@ Last message: ${message}
     // using this access gemini reply o/p
     const aiResData = aiRes?.candidates?.[0]?.content?.parts[0]?.text
       .split(",")
-      .map((s: string) => s);
+      .map((s: string) => s.trim());
     return NextResponse.json(
       {
         success: true,
