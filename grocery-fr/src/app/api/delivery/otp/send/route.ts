@@ -4,7 +4,7 @@ import sendEmail from "@/lib/sendCode";
 import Order from "@/models/order.model";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     await connectDb();
     const { orderId } = await req.json();

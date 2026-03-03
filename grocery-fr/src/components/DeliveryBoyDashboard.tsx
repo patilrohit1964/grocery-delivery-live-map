@@ -19,6 +19,8 @@ const DeliveryBoyDashboard = () => {
   const [assignments, setAssignments] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [activeOrder, setActiveOrder] = useState<any>(null);
+  const [showOtpBox, setShowOtpBox] = useState<boolean>(false);
+  const [otp, setOtp] = useState<string>("");
   const [userLocation, setUserLocation] = useState<ILocation>({
     latitude: 0,
     longitude: 0,
@@ -129,6 +131,35 @@ const DeliveryBoyDashboard = () => {
     fetchCurrentOrder();
     fetchAssignments();
   }, [userData]);
+  const handleSendOtp = async () => {
+    try {
+      const { data } = await axios.post(`/api/delivery/otp/send`, {
+        orderId: activeOrder.order._id,
+      });
+      if (!data.success) {
+        return toast.error(data.message || "something wrong");
+      }
+      toast.success(data.message);
+      setShowOtpBox(true);
+    } catch (error) {
+      console.log(error, "error while send otp");
+    }
+  };
+  const handleVerifyOtp = async () => {
+    try {
+      const { data } = await axios.post(`/api/delivery/otp/verify`, {
+        orderId: activeOrder.order._id,
+        otp,
+      });
+      if (!data.success) {
+        return toast.error(data.message || "something wrong");
+      }
+      toast.success(data.message);
+      setShowOtpBox(false);
+    } catch (error) {
+      console.log(error, "error while send otp");
+    }
+  };
   if (activeOrder && userLocation) {
     return (
       <div className="p-4 pt-30 min-h-screen bg-gray-50">
@@ -147,6 +178,32 @@ const DeliveryBoyDashboard = () => {
             orderId={activeOrder.order._id.toString()}
             deliveryBoyId={userData?._id?.toString()!}
           />
+          <div className="mt-6 rounded-xl border shadow p-6">
+            {!activeOrder.order.deliveryOtpVerified && !showOtpBox && (
+              <button
+                className="w-full py-4 bg-green-600 text-white rounded-lg cursor-pointer hover:bg-green-700 transition-all duration-300"
+                onClick={handleSendOtp}
+              >
+                Mark as Delivered
+              </button>
+            )}
+            {showOtpBox && (
+              <div className="mt-4">
+                <input
+                  type="number"
+                  className="w-full py-3 border rounded-lg text-center"
+                  placeholder="Enter Otp"
+                  onChange={(e)=>setOtp(e.target.value)}
+                />
+                <button
+                  className="w-full mt-3 py-4 bg-green-600 text-white rounded-lg cursor-pointer hover:bg-green-700 transition-all duration-300"
+                  onClick={handleVerifyOtp}
+                >
+                  Verify Otp
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );

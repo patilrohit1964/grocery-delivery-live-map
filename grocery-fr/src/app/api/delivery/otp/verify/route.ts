@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
       );
     }
     const order = await Order.findById(orderId).populate("user");
+    console.log(order,'order')
     if (!order) {
       return NextResponse.json(
         {
