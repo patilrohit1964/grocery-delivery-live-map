@@ -59,12 +59,22 @@ function ManageOrders() {
     };
     getMyOrders();
   }, []);
-  useEffect((): any => {
+  useEffect(() => {
     const socket = getSocket();
     socket?.on("new-order", (newOrder) => {
       setMyOrders((prev) => [newOrder, ...prev!]);
     });
-    return () => socket.off("new-order");
+    socket.on("order-assigned", ({ orderId, assignDeliveryBoy }) => {
+      setMyOrders((prev) =>
+        prev?.map((ord) =>
+          ord._id === orderId ? { ...ord, assignDeliveryBoy } : ord,
+        ),
+      );
+    });
+    return () => {
+      socket.off("new-order");
+      socket.off("order-assigned");
+    };
   }, []);
   return (
     <div className="min-h-screen bg-gray-50 w-full">
