@@ -16,8 +16,12 @@ export interface ILocation {
 }
 const DeliveryBoyDashboard = () => {
   userGetMe();
-  const [assignments, setAssignments] = useState<any[]>([]);
+  // loading state start
+  const [otpLoading, setOtpLoading] = useState<boolean>(false);
+  const [verifyLoading, setVerifyLoading] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  // loading state end
+  const [assignments, setAssignments] = useState<any[]>([]);
   const [activeOrder, setActiveOrder] = useState<any>(null);
   const [showOtpBox, setShowOtpBox] = useState<boolean>(false);
   const [otp, setOtp] = useState<string>("");
@@ -79,6 +83,7 @@ const DeliveryBoyDashboard = () => {
     return () => socket.off("new-assignment");
   }, []);
 
+  // accept order delivery boy
   const handleAcceptOrder = async (id: string) => {
     setLoading(true);
     try {
@@ -98,6 +103,7 @@ const DeliveryBoyDashboard = () => {
     }
   };
 
+  // fetch delivery boy current orders
   const fetchCurrentOrder = async () => {
     try {
       const { data } = await axios.get("/api/delivery/current-order");
@@ -116,6 +122,7 @@ const DeliveryBoyDashboard = () => {
     }
   };
 
+  // update delivery boy location
   useEffect((): any => {
     const socket = getSocket();
     socket.on("update-deliveryBoy-location", ({ userId, location }) => {
@@ -127,11 +134,15 @@ const DeliveryBoyDashboard = () => {
     return () => socket.off("update-deliveryBoy-location");
   }, []);
 
+  // call fetchcurrentorder and fetchassignments
   useEffect(() => {
     fetchCurrentOrder();
     fetchAssignments();
   }, [userData]);
+
+  // send otp to user for order verified
   const handleSendOtp = async () => {
+    setOtpLoading(true);
     try {
       const { data } = await axios.post(`/api/delivery/otp/send`, {
         orderId: activeOrder.order._id,
@@ -141,11 +152,18 @@ const DeliveryBoyDashboard = () => {
       }
       toast.success(data.message);
       setShowOtpBox(true);
+      setOtpLoading(false);
     } catch (error) {
       console.log(error, "error while send otp");
+      setOtpLoading(false);
+    } finally {
+      setOtpLoading(false);
     }
   };
+
+  // verify order if order delivered
   const handleVerifyOtp = async () => {
+    setVerifyLoading(true);
     try {
       const { data } = await axios.post(`/api/delivery/otp/verify`, {
         orderId: activeOrder.order._id,
@@ -156,8 +174,14 @@ const DeliveryBoyDashboard = () => {
       }
       toast.success(data.message);
       setShowOtpBox(false);
+      setActiveOrder(null);
+      setVerifyLoading(false);
+      await fetchCurrentOrder();
     } catch (error) {
       console.log(error, "error while send otp");
+      setVerifyLoading(false);
+    } finally {
+      setVerifyLoading(false);
     }
   };
   if (activeOrder && userLocation) {
@@ -193,7 +217,8 @@ const DeliveryBoyDashboard = () => {
                   type="number"
                   className="w-full py-3 border rounded-lg text-center"
                   placeholder="Enter Otp"
-                  onChange={(e)=>setOtp(e.target.value)}
+                  onChange={(e) => setOtp(e.target.value)}
+                  value={otp}
                 />
                 <button
                   className="w-full mt-3 py-4 bg-green-600 text-white rounded-lg cursor-pointer hover:bg-green-700 transition-all duration-300"
@@ -201,6 +226,11 @@ const DeliveryBoyDashboard = () => {
                 >
                   Verify Otp
                 </button>
+              </div>
+            )}
+            {activeOrder.order.deliveryOtpVerified && (
+              <div className="text-green-700 text-center font-bold">
+                Delivered
               </div>
             )}
           </div>
@@ -226,14 +256,15 @@ const DeliveryBoyDashboard = () => {
             <div className="flex gap-3 mt-4">
               <motion.button
                 whileTap={{ scale: 0.9 }}
-                className="cursor-pointer hover:bg-green-700 flex-1 bg-green-600 text-white py-2 rounded-lg"
+                className={`${loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"} hover:bg-green-700 flex-1 bg-green-600 text-white py-2 rounded-lg`}
                 onClick={() => handleAcceptOrder(assignment?._id)}
+                disabled={loading}
               >
                 {loading ? (
-                  <>
-                    <Loader2 />
-                    "Accepting..."
-                  </>
+                  <div className="flex items-center justify-center gap-2">
+                    <Loader2 className="animate-spin" />
+                    Accepting...
+                  </div>
                 ) : (
                   "Accept"
                 )}
