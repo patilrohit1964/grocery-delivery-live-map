@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import connectDb from "@/lib/db";
+import emitEventHandler from "@/lib/emitEventHandler";
 import DeliverAssignment from "@/models/deliveryAssignment.model";
 import Order from "@/models/order.model";
 import { NextRequest, NextResponse } from "next/server";
@@ -74,6 +75,12 @@ export async function GET(
     }
     order.assignDeliveryBoy = deliveryBoyId;
     await order.save();
+    await order.populate("assignDeliveryBoy");
+    await emitEventHandler("order-assigned", {
+      assignDeliveryBoy: order.assignDeliveryBoy,
+      orderId: order._id,
+    });
+
     // if current user accept the assignment then remove that user from another assignment broadcast list
     await DeliverAssignment.updateMany(
       {
@@ -85,6 +92,7 @@ export async function GET(
         $pull: { broadcastTo: deliveryBoyId },
       },
     );
+
     return NextResponse.json(
       {
         success: true,

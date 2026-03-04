@@ -47,7 +47,6 @@ const DeliveryBoyDashboard = () => {
       console.log(error, "error while geting assignments");
     }
   };
-
   // track live location code of delivery boy
   useEffect(() => {
     const socket = getSocket();
@@ -176,7 +175,7 @@ const DeliveryBoyDashboard = () => {
       setShowOtpBox(false);
       setActiveOrder(null);
       setVerifyLoading(false);
-      await fetchCurrentOrder();
+      // await fetchCurrentOrder();
     } catch (error) {
       console.log(error, "error while send otp");
       setVerifyLoading(false);
@@ -205,10 +204,17 @@ const DeliveryBoyDashboard = () => {
           <div className="mt-6 rounded-xl border shadow p-6">
             {!activeOrder.order.deliveryOtpVerified && !showOtpBox && (
               <button
-                className="w-full py-4 bg-green-600 text-white rounded-lg cursor-pointer hover:bg-green-700 transition-all duration-300"
+                className={`w-full py-4 bg-green-600 text-white rounded-lg ${otpLoading ? "cursor-not-allowed opacity-50" : "cursor-pointer"} hover:bg-green-700 transition-all duration-300`}
                 onClick={handleSendOtp}
               >
-                Mark as Delivered
+                {otpLoading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <Loader2 className="animate-spin" />
+                    OTP send...
+                  </div>
+                ) : (
+                  "Mark as Delivered"
+                )}
               </button>
             )}
             {showOtpBox && (
@@ -221,10 +227,17 @@ const DeliveryBoyDashboard = () => {
                   value={otp}
                 />
                 <button
-                  className="w-full mt-3 py-4 bg-green-600 text-white rounded-lg cursor-pointer hover:bg-green-700 transition-all duration-300"
+                  className={`w-full mt-3 py-4 bg-green-600 text-white rounded-lg ${verifyLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"} hover:bg-green-700 transition-all duration-300`}
                   onClick={handleVerifyOtp}
                 >
-                  Verify Otp
+                  {verifyLoading ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <Loader2 className="animate-spin" />
+                      Verifying
+                    </div>
+                  ) : (
+                    "Verify Otp"
+                  )}
                 </button>
               </div>
             )}
