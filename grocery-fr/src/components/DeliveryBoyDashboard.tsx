@@ -116,8 +116,11 @@ const DeliveryBoyDashboard = () => {
         longitude: data.data?.order?.address?.longitude,
       });
       // console.log(data, "current order data");
-    } catch (error) {
+    } catch (error: Error | any) {
       console.log(error);
+      return toast.error(
+        error?.response?.data?.message || "No current order assigned",
+      );
     }
   };
 

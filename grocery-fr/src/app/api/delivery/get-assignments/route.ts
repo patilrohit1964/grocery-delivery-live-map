@@ -12,6 +12,7 @@ export async function GET() {
       broadcastTo: session?.user?.id,
       status: "broadcasted",
     }).populate("order");
+    console.log(assignments,'assign')
     return NextResponse.json(
       {
         message: "assigments",

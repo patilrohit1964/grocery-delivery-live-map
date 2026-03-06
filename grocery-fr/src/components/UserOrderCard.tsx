@@ -80,11 +80,13 @@ function UserOrderCard({ order }: { order: IOrder }) {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <span
-            className={`px-3 py-1 rounded-full font-semibold text-xs border ${order.isPaid ? "bg-green-100 text-green-700 border-green-300" : "bg-red-100 text-red-700 border-red-300"}`}
-          >
-            {order.isPaid ? "Paid" : "Unpaid"}
-          </span>
+          {order.status !== "delivered" && (
+            <span
+              className={`px-3 py-1 rounded-full font-semibold text-xs border ${order.isPaid ? "bg-green-100 text-green-700 border-green-300" : "bg-red-100 text-red-700 border-red-300"}`}
+            >
+              {order.isPaid ? "Paid" : "Unpaid"}
+            </span>
+          )}
           <span
             className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusColor(order.status)}`}
           >
@@ -92,125 +94,129 @@ function UserOrderCard({ order }: { order: IOrder }) {
           </span>
         </div>
       </div>
-      <div className="p-5 space-y-4">
-        {order.paymentMethod === "cod" ? (
-          <div className="flex items-center gap-2 text-gray-700 text-sm">
-            <Truck size={16} className="text-green-600" />
-            Cash On Delivery
-          </div>
-        ) : (
-          <div className="flex items-center gap-2 text-gray-700 text-sm">
-            <CreditCard size={16} className="text-green-600" />
-            Online Payment
-          </div>
-        )}
-        <div className="flex items-center gap-2 text-gray-700 text-sm">
-          <MapPin size={16} className="text-green-600" />
-          <span className="trucate">{order.address.fullAddress}</span>
-        </div>
-        <div className="border-t border-gray-400 pt-3">
-          <button
-            className="w-full flex justify-between items-center text-sm font-medium text-gray-700 hover:text-green-700 transition-all "
-            onClick={() => setExpanded((prev) => !prev)}
-          >
-            <span className="flex items-center gap-2 justify-center">
-              <Package size={16} className="text-green-600" />
-              {expanded
-                ? "Hide Order Items"
-                : `View ${order.items.length} Items`}
-            </span>
-            {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-          </button>
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{
-              height: expanded ? "auto" : 0,
-              opacity: expanded ? 1 : 0,
-            }}
-            transition={{ duration: 0.3 }}
-            className="overflow-hidden"
-          >
-            <div className="mt-3 space-y-3">
-              {order.items.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between bg-gray-50 rounded-xl px-3 py-2 hover:bg-gray-100 transition"
-                >
-                  <div className="flex items-center gap-3">
-                    <Image
-                      src={item.image}
-                      height={48}
-                      width={48}
-                      className="object-cover border border-gray-200 rounded-lg"
-                      alt="product image"
-                    />
-                    <div>
-                      <p className="text-sm font-medium text-gray-800">
-                        {item.name} x pack
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {item.quantity} x {item.unit}
-                      </p>
-                    </div>
-                  </div>
-                  <h3 className="font-semibold text-lg">
-                    ₹{Number(item.price) * item.quantity}
-                  </h3>
-                </div>
-              ))}
+      {order.status !== "delivered" && (
+        <div className="p-5 space-y-4">
+          {order.paymentMethod === "cod" ? (
+            <div className="flex items-center gap-2 text-gray-700 text-sm">
+              <Truck size={16} className="text-green-600" />
+              Cash On Delivery
             </div>
-          </motion.div>
-        </div>
-        <div className="border-t pt-3 flex justify-between items-center text-sm font-semibold text-gray-800">
+          ) : (
+            <div className="flex items-center gap-2 text-gray-700 text-sm">
+              <CreditCard size={16} className="text-green-600" />
+              Online Payment
+            </div>
+          )}
           <div className="flex items-center gap-2 text-gray-700 text-sm">
-            <Truck size={16} className="text-green-600" />
-            Delivery:
-            <span
-              className={`${getStatusColor(order.status)} border py-1 px-3 rounded-full font-semibold`}
+            <MapPin size={16} className="text-green-600" />
+            <span className="trucate">{order.address.fullAddress}</span>
+          </div>
+          <div className="border-t border-gray-400 pt-3">
+            <button
+              className="w-full flex justify-between items-center text-sm font-medium text-gray-700 hover:text-green-700 transition-all "
+              onClick={() => setExpanded((prev) => !prev)}
             >
-              {order.status}
-            </span>
-          </div>
-          <div>
-            Total:{" "}
-            <span className="text-green-600 font-bold">
-              ₹{order.totalAmount}
-            </span>
-          </div>
-        </div>
-        {order?.assignDeliveryBoy && (
-          <>
-            <div className="mt-4 bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3 text-sm text-gray-700">
-                <UserCheck2 className="text-blue-600" size={18} />
-                <div className="font-semibold text-gray-800">
-                  <p>
-                    Assigned To:{" "}
-                    <span>
-                      {order?.assignDeliveryBoy?.name.charAt(0).toUpperCase() +
-                        order.assignDeliveryBoy.name.slice(1)}
-                    </span>
-                  </p>
-                  <p className="text-xs text-gray-600">
-                    📞 :<span>{order?.assignDeliveryBoy?.mobile}</span>
-                  </p>
-                </div>
+              <span className="flex items-center gap-2 justify-center">
+                <Package size={16} className="text-green-600" />
+                {expanded
+                  ? "Hide Order Items"
+                  : `View ${order.items.length} Items`}
+              </span>
+              {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{
+                height: expanded ? "auto" : 0,
+                opacity: expanded ? 1 : 0,
+              }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <div className="mt-3 space-y-3">
+                {order.items.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between bg-gray-50 rounded-xl px-3 py-2 hover:bg-gray-100 transition"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Image
+                        src={item.image}
+                        height={48}
+                        width={48}
+                        className="object-cover border border-gray-200 rounded-lg"
+                        alt="product image"
+                      />
+                      <div>
+                        <p className="text-sm font-medium text-gray-800">
+                          {item.name} x pack
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {item.quantity} x {item.unit}
+                        </p>
+                      </div>
+                    </div>
+                    <h3 className="font-semibold text-lg">
+                      ₹{Number(item.price) * item.quantity}
+                    </h3>
+                  </div>
+                ))}
               </div>
-              <a
-                href={`tel:${order.assignDeliveryBoy.mobile}`}
-                className="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg hover:bg-blue-700 transition"
+            </motion.div>
+          </div>
+          <div className="border-t pt-3 flex justify-between items-center text-sm font-semibold text-gray-800">
+            <div className="flex items-center gap-2 text-gray-700 text-sm">
+              <Truck size={16} className="text-green-600" />
+              Delivery:
+              <span
+                className={`${getStatusColor(order.status)} border py-1 px-3 rounded-full font-semibold`}
               >
-                Call
-              </a>
+                {order.status}
+              </span>
             </div>
-            <Link href={`/user/track-user/${order._id}`}>
-              <button className="w-full flex items-center justify-center gap-2 bg-green-600 text-white font-semibold px-4 py-2 rounded-xl shadow hover:bg-green-700 transition cursor-pointer">
-                Track Your Order
-              </button>
-            </Link>
-          </>
-        )}
-      </div>
+            <div>
+              Total:{" "}
+              <span className="text-green-600 font-bold">
+                ₹{order.totalAmount}
+              </span>
+            </div>
+          </div>
+          {order?.assignDeliveryBoy && (
+            <>
+              <div className="mt-4 bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3 text-sm text-gray-700">
+                  <UserCheck2 className="text-blue-600" size={18} />
+                  <div className="font-semibold text-gray-800">
+                    <p>
+                      Assigned To:{" "}
+                      <span>
+                        {order?.assignDeliveryBoy?.name
+                          .charAt(0)
+                          .toUpperCase() +
+                          order.assignDeliveryBoy.name.slice(1)}
+                      </span>
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      📞 :<span>{order?.assignDeliveryBoy?.mobile}</span>
+                    </p>
+                  </div>
+                </div>
+                <a
+                  href={`tel:${order.assignDeliveryBoy.mobile}`}
+                  className="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg hover:bg-blue-700 transition"
+                >
+                  Call
+                </a>
+              </div>
+              <Link href={`/user/track-user/${order._id}`}>
+                <button className="w-full flex items-center justify-center gap-2 bg-green-600 text-white font-semibold px-4 py-2 rounded-xl shadow hover:bg-green-700 transition cursor-pointer">
+                  Track Your Order
+                </button>
+              </Link>
+            </>
+          )}
+        </div>
+      )}
     </motion.div>
   );
 }

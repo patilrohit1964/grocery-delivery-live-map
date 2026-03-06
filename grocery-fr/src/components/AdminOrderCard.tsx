@@ -83,11 +83,13 @@ function AdminOrderCard({ order }: { order: IOrder }) {
             <Package size={20} />
             Order #{order?._id?.toString().slice(-6)}
           </p>
-          <span
-            className={`inline-block text-xs font-semibold px-3 py-1 rounded-full border ${order?.isPaid ? "bg-green-100 text-green-700 border-green-300" : "bg-red-100 text-red-700 border-red-100"}`}
-          >
-            {order?.isPaid ? "Paid" : "Unpaid"}
-          </span>
+          {status !== "delivered" && (
+            <span
+              className={`inline-block text-xs font-semibold px-3 py-1 rounded-full border ${order?.isPaid ? "bg-green-100 text-green-700 border-green-300" : "bg-red-100 text-red-700 border-red-100"}`}
+            >
+              {order?.isPaid ? "Paid" : "Unpaid"}
+            </span>
+          )}
           <p>{new Date(order?.createdAt!).toLocaleString()}</p>
           <div className="mt-3 space-y-1 text-gray-700 text-sm">
             <p className="flex items-center gap-2 font-semibold">
@@ -145,19 +147,21 @@ function AdminOrderCard({ order }: { order: IOrder }) {
           >
             {status}
           </span>
-          <select
-            onChange={(e) =>
-              updateStatus(order?._id?.toString()!, e.target.value)
-            }
-            value={status}
-            className="border border-gray-300 rounded-lg px-3 py-1 text-sm shadow-sm hover:border-green-400 transition focus:ring-2 focus:ring-green-500 outline-none"
-          >
-            {statusOptions.map((status) => (
-              <option key={status} value={status}>
-                {status?.toUpperCase()}
-              </option>
-            ))}
-          </select>
+          {status !== "delivered" && (
+            <select
+              onChange={(e) =>
+                updateStatus(order?._id?.toString()!, e.target.value)
+              }
+              value={status}
+              className="border border-gray-300 rounded-lg px-3 py-1 text-sm shadow-sm hover:border-green-400 transition focus:ring-2 focus:ring-green-500 outline-none"
+            >
+              {statusOptions.map((status) => (
+                <option key={status} value={status}>
+                  {status?.toUpperCase()}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
       </div>
       <div className="border-t border-gray-400 mt-3 pt-3">

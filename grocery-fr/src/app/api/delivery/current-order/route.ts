@@ -22,7 +22,7 @@ export async function GET() {
       return NextResponse.json(
         {
           success: false,
-          message: "No current order assigned",
+          message: "no available any current order",
         },
         { status: 404 },
       );
