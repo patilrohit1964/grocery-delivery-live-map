@@ -17,8 +17,8 @@ const UserDashboard = async () => {
           Popular Grocery Items
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-          {plainGrocery.map((groceryItem: any) => (
-            <GroceryItems key={groceryItem._id} groceryItem={groceryItem} />
+          {plainGrocery?.map((groceryItem: any) => (
+            <GroceryItems key={groceryItem?._id} groceryItem={groceryItem} />
           ))}
         </div>
       </div>

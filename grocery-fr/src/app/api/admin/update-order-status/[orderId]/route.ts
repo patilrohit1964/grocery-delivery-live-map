@@ -83,7 +83,7 @@ export async function POST(
         longitude: b.location.coordinates[0],
       }));
       await deliveryAssignment.populate("order");
-      // order.assignDeliveryBoy = deliveryAssignment.assignTo;
+      order.assignDeliveryBoy = deliveryAssignment.assignTo;
     }
     await order.save();
     await order.populate("user");

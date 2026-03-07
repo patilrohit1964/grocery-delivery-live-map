@@ -38,7 +38,7 @@ const GroceryItems = ({ groceryItem }: { groceryItem: IGroceryItem }) => {
     >
       <div className="relative w-full aspect-4/3 bg-gray-50 overflow-hidden group">
         <Image
-          src={groceryItem.image}
+          src={groceryItem?.image}
           fill
           alt="grocery image"
           sizes="(max-width:768px) 100vw, 25vw"
@@ -48,15 +48,15 @@ const GroceryItems = ({ groceryItem }: { groceryItem: IGroceryItem }) => {
       </div>
       <div className="p-4 flex flex-col flex-1">
         <p className="text-xs text-gray-500 font-medium mb-1">
-          {groceryItem.category}
+          {groceryItem?.category}
         </p>
-        <h3 className="">{groceryItem.name}</h3>
+        <h3 className="">{groceryItem?.name}</h3>
         <div className="flex items-center justify-between">
           <span className="text-xs font-medium text-gray-600 bg-gray-100 py-1 rounded-full">
-            {groceryItem.unit}
+            {groceryItem?.unit}
           </span>
           <span className="font-bold text-green-700 text-lg">
-            ₹{groceryItem.price}
+            ₹{groceryItem?.price}
           </span>
         </div>
         {cartItemExist ? (
@@ -68,14 +68,14 @@ const GroceryItems = ({ groceryItem }: { groceryItem: IGroceryItem }) => {
           >
             <button
               className="w-7 h-7 flex items-center justify-center rounded-full bg-green-100 hover:bg-green-200 transition-all cursor-pointer border border-gray-400"
-              onClick={() => dispatch(decreaseQuantity(groceryItem._id))}
+              onClick={() => dispatch(decreaseQuantity(groceryItem?._id))}
             >
               <Minus size={16} className="text-green-700" />
             </button>
             <span>{cartItemExist.quantity}</span>
             <button
               className="w-7 h-7 flex items-center justify-center rounded-full bg-green-100 hover:bg-green-200 transition-all cursor-pointer border border-gray-400"
-              onClick={() => dispatch(increaseQuantity(groceryItem._id))}
+              onClick={() => dispatch(increaseQuantity(groceryItem?._id))}
             >
               <Plus size={16} className="text-green-700" />
             </button>

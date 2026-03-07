@@ -43,6 +43,8 @@ interface IOrder {
 }
 function MyOrders() {
   const [orders, setMyOrders] = useState<IOrder[]>();
+
+  // user orderes fetched
   useEffect(() => {
     const getMyOrders = async () => {
       try {
