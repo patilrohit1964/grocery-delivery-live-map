@@ -1,3 +1,4 @@
+import { getSocket } from "@/lib/socket";
 import { IUser } from "@/models/user.model";
 import {
   ChevronDown,
@@ -12,7 +13,7 @@ import mongoose from "mongoose";
 import { motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const getStatusColor = (status: string) => {
   switch (status) {
@@ -60,6 +61,15 @@ interface IOrder {
 }
 function UserOrderCard({ order }: { order: IOrder }) {
   const [expanded, setExpanded] = useState(false);
+  const [status, setStatus] = useState(order?.status);
+  useEffect((): any => {
+    const socket = getSocket();
+    socket.on("order-status-update", (data) => {
+      if (data?.orderId.toString() === order?._id!.toString()) {
+        setStatus(order?.status);
+      }
+    });
+  }, []);
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
@@ -80,7 +90,7 @@ function UserOrderCard({ order }: { order: IOrder }) {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          {order.status !== "delivered" && (
+          {status !== "delivered" && (
             <span
               className={`px-3 py-1 rounded-full font-semibold text-xs border ${order.isPaid ? "bg-green-100 text-green-700 border-green-300" : "bg-red-100 text-red-700 border-red-300"}`}
             >
@@ -88,13 +98,13 @@ function UserOrderCard({ order }: { order: IOrder }) {
             </span>
           )}
           <span
-            className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusColor(order.status)}`}
+            className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusColor(status)}`}
           >
-            {order.status}
+            {status}
           </span>
         </div>
       </div>
-      {order.status !== "delivered" && (
+      {status !== "delivered" && (
         <div className="p-5 space-y-4">
           {order.paymentMethod === "cod" ? (
             <div className="flex items-center gap-2 text-gray-700 text-sm">
@@ -169,9 +179,9 @@ function UserOrderCard({ order }: { order: IOrder }) {
               <Truck size={16} className="text-green-600" />
               Delivery:
               <span
-                className={`${getStatusColor(order.status)} border py-1 px-3 rounded-full font-semibold`}
+                className={`${getStatusColor(status)} border py-1 px-3 rounded-full font-semibold`}
               >
-                {order.status}
+                {status}
               </span>
             </div>
             <div>

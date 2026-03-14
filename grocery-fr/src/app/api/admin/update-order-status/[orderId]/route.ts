@@ -56,7 +56,7 @@ export async function POST(
         await order.save();
         return NextResponse.json(
           {
-            success: true,
+            success: false,
             message: "delivery boy not founds",
           },
           { status: 200 },
@@ -87,6 +87,10 @@ export async function POST(
     }
     await order.save();
     await order.populate("user");
+    await emitEventHandler("order-status-update", {
+      orderId: order?._id,
+      status: order?.status,
+    });
     return NextResponse.json(
       {
         success: true,

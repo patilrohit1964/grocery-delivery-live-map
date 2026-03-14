@@ -16,6 +16,7 @@ import { motion } from "motion/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { getStatusColor } from "./UserOrderCard";
+import { toast } from "react-toastify";
 
 const statusOptions = ["pending", "out of delivery"];
 interface IOrder {
@@ -60,9 +61,10 @@ function AdminOrderCard({ order }: { order: IOrder }) {
         `/api/admin/update-order-status/${orderId}`,
         { status },
       );
-      if (data.success) {
-        setStatus(status);
+      if (!data.success) {
+        toast.error(data?.message || 'currently not available any delivery boy')
       }
+      setStatus(status);
     } catch (error) {
       console.log(error, "error while order status update");
     }

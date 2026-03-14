@@ -93,6 +93,7 @@ const DeliveryBoyDashboard = () => {
         toast.error(data?.message || "failed to accept assignment");
         return;
       }
+      fetchCurrentOrder();
       setLoading(false);
     } catch (error) {
       console.log(error);
