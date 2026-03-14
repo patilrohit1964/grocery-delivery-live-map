@@ -69,6 +69,7 @@ function UserOrderCard({ order }: { order: IOrder }) {
         setStatus(order?.status);
       }
     });
+    return () => socket.off("order-status-update");
   }, []);
   return (
     <motion.div

@@ -17,6 +17,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { getStatusColor } from "./UserOrderCard";
 import { toast } from "react-toastify";
+import { getSocket } from "@/lib/socket";
 
 const statusOptions = ["pending", "out of delivery"];
 interface IOrder {
@@ -62,7 +63,9 @@ function AdminOrderCard({ order }: { order: IOrder }) {
         { status },
       );
       if (!data.success) {
-        toast.error(data?.message || 'currently not available any delivery boy')
+        toast.error(
+          data?.message || "currently not available any delivery boy",
+        );
       }
       setStatus(status);
     } catch (error) {
@@ -72,6 +75,15 @@ function AdminOrderCard({ order }: { order: IOrder }) {
   useEffect(() => {
     setStatus(order.status);
   }, [order]);
+  useEffect((): any => {
+    const socket = getSocket();
+    socket.on("order-status-update", (data) => {
+      if (data?.orderId.toString() === order?._id!.toString()) {
+        setStatus(order?.status);
+      }
+    });
+    return () => socket.off("order-status-update");
+  }, []);
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
