@@ -38,7 +38,33 @@ const AdminDashboard = async () => {
     (sum, ord) => sum + (ord?.totalAmount || 0),
     0,
   );
+  const stats = [
+    { title: "Total Orders", value: totalOrders },
+    { title: "Total Customers", value: totalCustomers },
+    { title: "Pending Deliveries", value: pendingDeliveries },
+    { title: "Total Revenue", value: totalRevenue },
+  ];
+  const chartData = [];
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date();
+    // using this we get date
+    date.setDate(date.getDate() - i);
+    date.setHours(0, 0, 0, 0);
 
+    const nextDay = new Date(date);
+    // get next date
+    nextDay.setDate(nextDay.getDate() + 1);
+
+    const ordersCount = orders.filter(
+      (ord, idx) =>
+        new Date(ord?.createdAt) >= date && new Date(ord?.createdAt) < nextDay,
+    );
+
+    chartData.push({
+      day: date.toLocaleDateString("en-US", { weekday: "short" }),
+      orders: ordersCount,
+    });
+  }
   return (
     <div>
       <AdminDashboardClient
@@ -47,6 +73,8 @@ const AdminDashboard = async () => {
           sevenDays: sevenDaysRevenue,
           today: todayRevenue,
         }}
+        stats={stats}
+        chartData={chartData}
       />
     </div>
   );
