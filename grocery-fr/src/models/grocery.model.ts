@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-interface IGROCERY {
+export interface IGROCERY {
   _id?: mongoose.Types.ObjectId;
   name: string;
   category: string;
