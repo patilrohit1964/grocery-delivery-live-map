@@ -58,7 +58,7 @@ const AdminDashboard = async () => {
     const ordersCount = orders.filter(
       (ord, idx) =>
         new Date(ord?.createdAt) >= date && new Date(ord?.createdAt) < nextDay,
-    );
+    ).length;
 
     chartData.push({
       day: date.toLocaleDateString("en-US", { weekday: "short" }),
