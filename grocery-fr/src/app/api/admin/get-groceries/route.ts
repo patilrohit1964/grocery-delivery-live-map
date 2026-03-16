@@ -1,8 +1,10 @@
+import connectDb from "@/lib/db";
 import Grocery from "@/models/grocery.model";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
+    await connectDb();
     const groceries = await Grocery.find();
     return NextResponse.json(
       {
@@ -14,7 +16,7 @@ export async function GET() {
     );
   } catch (error) {
     console.log(error, "error while get groceries");
-     return NextResponse.json(
+    return NextResponse.json(
       {
         message: "server error",
         success: false,

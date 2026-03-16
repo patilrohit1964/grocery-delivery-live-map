@@ -11,6 +11,19 @@ import { toast } from "react-toastify";
 const ViewGroceries = () => {
   const [groceries, setGroceries] = useState<IGROCERY[]>([]);
   const router = useRouter();
+  const [formData, setFormData] = useState<{
+    name: string;
+    category: string;
+    unit: string;
+    price: string;
+    image: File | null;
+  }>({
+    name: "",
+    category: "",
+    unit: "",
+    price: "",
+    image: null,
+  });
   useEffect(() => {
     async function getGroceries() {
       try {
@@ -29,6 +42,13 @@ const ViewGroceries = () => {
     }
     getGroceries();
   }, []);
+  const handleEditGrocery = async () => {
+    try {
+      const { data: editRes } = await axios.put("/api/edit-grocery");
+    } catch (error) {
+      console.log(error, "error while edit grocery");
+    }
+  };
   return (
     <div className="pt-4 w-[95%] md:w-[85%] mx-auto pb-20">
       <motion.div

@@ -14,7 +14,7 @@ import { motion } from "motion/react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import Image from "next/image";
-const groceryCategories = [
+export const groceryCategories = [
   "fruits & vegetables",
   "dairy & eggs",
   "rice,atta & grains",
