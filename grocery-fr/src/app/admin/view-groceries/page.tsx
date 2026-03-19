@@ -1,29 +1,30 @@
 "use client";
 import { IGROCERY } from "@/models/grocery.model";
 import axios from "axios";
-import { ArrowLeft, Package, Pencil, Search } from "lucide-react";
-import { motion } from "motion/react";
+import {
+  ArrowLeft,
+  Delete,
+  Package,
+  Pencil,
+  Search,
+  Trash,
+  Upload,
+  X,
+} from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { groceryCategories, units } from "../add-grocery/page";
 
 const ViewGroceries = () => {
   const [groceries, setGroceries] = useState<IGROCERY[]>([]);
   const router = useRouter();
-  const [formData, setFormData] = useState<{
-    name: string;
-    category: string;
-    unit: string;
-    price: string;
-    image: File | null;
-  }>({
-    name: "",
-    category: "",
-    unit: "",
-    price: "",
-    image: null,
-  });
+  const [editGrocery, setEditGrocery] = useState<IGROCERY | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [backendImg, setBackendImg] = useState<string | null>(null);
+
   useEffect(() => {
     async function getGroceries() {
       try {
@@ -44,9 +45,32 @@ const ViewGroceries = () => {
   }, []);
   const handleEditGrocery = async () => {
     try {
-      const { data: editRes } = await axios.put("/api/edit-grocery");
+      const formData = new FormData();
+      formData.append("_id",editGrocery._id);
+      formData.append("name",editGrocery.name);
+      formData.append("category",editGrocery?.category);
+      formData.append("price",editGrocery?.price);
+      formData.append("unit",editGrocery?.unit);
+      formData.append("image"imagePreview);
+      const { data: editRes } = await axios.put(
+        "/api/admin/edit-grocery",
+        formData,
+      );
+      console.log(editRes, "edit res");
     } catch (error) {
       console.log(error, "error while edit grocery");
+    }
+    console.log(editGrocery, "grocer value");
+  };
+  useEffect(() => {
+    if (editGrocery) {
+      setImagePreview(editGrocery?.image);
+    }
+  }, [editGrocery]);
+  const handleChangeImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImagePreview(URL.createObjectURL(file));
     }
   };
   return (
@@ -112,7 +136,10 @@ const ViewGroceries = () => {
                     {grocery?.unit}
                   </span>
                 </p>
-                <button className="bg-green-600 text-white px-4 py-2 rounded-lg text-lg font-semibold flex items-center justify-center gap-2 hover:bg-green-700 transition-all cursor-pointer">
+                <button
+                  onClick={() => setEditGrocery(grocery)}
+                  className="bg-green-600 text-white px-4 py-2 rounded-lg text-lg font-semibold flex items-center justify-center gap-2 hover:bg-green-700 transition-all cursor-pointer"
+                >
                   <Pencil size={15} />
                   Edit
                 </button>
@@ -121,6 +148,125 @@ const ViewGroceries = () => {
           </motion.div>
         ))}
       </div>
+      <AnimatePresence>
+        {editGrocery && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 backdrop-blur-sm px-4"
+          >
+            <motion.div
+              initial={{ y: 40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 40, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-7 relative"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-green-700">
+                  Edit Grocery
+                </h2>
+                <button
+                  className="text-gray-600 hover:text-white transition-all duration-300 hover:bg-gray-500 rounded-xl p-1 cursor-pointer"
+                  onClick={() => setEditGrocery(null)}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              <div className="relative aspect-square w-32 h-32 m-auto rounded-lg overflow-hidden mb-4 border border-gray-200 group">
+                {imagePreview && (
+                  <Image
+                    src={imagePreview}
+                    alt={editGrocery?.name}
+                    fill
+                    className="object-cover"
+                  />
+                )}
+                <label
+                  htmlFor="image"
+                  className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity"
+                >
+                  <Upload color="white" />
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  id="image"
+                  onChange={handleChangeImage}
+                />
+              </div>
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  placeholder="Enter grocery name"
+                  value={editGrocery?.name}
+                  onChange={(e) =>
+                    setEditGrocery({
+                      ...editGrocery,
+                      name: e.target.value,
+                    })
+                  }
+                  className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-green-500 outline-none"
+                />
+                <select
+                  className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-green-500 outline-none bg-white"
+                  onChange={(e) =>
+                    setEditGrocery({ ...editGrocery, category: e.target.value })
+                  }
+                  value={editGrocery?.category}
+                >
+                  <option value={""}>Select Category</option>
+                  {groceryCategories.map((cata, idx) => (
+                    <option value={cata} key={idx}>
+                      {cata}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="text"
+                  placeholder="Enter grocery price"
+                  value={editGrocery?.price}
+                  onChange={(e) =>
+                    setEditGrocery({
+                      ...editGrocery,
+                      price: e.target.value,
+                    })
+                  }
+                  className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-green-500 outline-none"
+                />
+                <select
+                  className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-green-500 outline-none bg-white"
+                  onChange={(e) =>
+                    setEditGrocery({ ...editGrocery, unit: e.target.value })
+                  }
+                  value={editGrocery?.unit}
+                >
+                  <option value={""}>Select unit</option>
+                  {units.map((unit, idx) => (
+                    <option value={unit} key={idx}>
+                      {unit}
+                    </option>
+                  ))}
+                </select>
+                <div className="flex items-center justify-end gap-3">
+                  <button className="px-4 py-2 rounded-lg bg-red-600 text-white flex items-center gap-2 hover:bg-red-700 transition-all cursor-pointer">
+                    <Trash size={18} />
+                    <span>Delete Grocery</span>
+                  </button>
+                  <button
+                    className="px-4 py-2 rounded-lg bg-green-600 text-white flex items-center gap-2 hover:bg-green-700 transition-all cursor-pointer"
+                    onClick={handleEditGrocery}
+                  >
+                    Edit Grocery
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
