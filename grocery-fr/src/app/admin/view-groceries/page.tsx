@@ -24,6 +24,7 @@ const ViewGroceries = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [backendImg, setBackendImg] = useState<File | null>(null);
   const [loadingEdit, setEditLoading] = useState(false);
+  const [search,setSearch]=useState('')
   useEffect(() => {
     async function getGroceries() {
       try {
@@ -112,7 +113,7 @@ const ViewGroceries = () => {
       setImagePreview(editGrocery?.image);
     }
   }, [editGrocery]);
-
+const filteredData=groceries.filter(grocery=>grocery?.name?.toLowerCase().includes(search))
   return (
     <div className="pt-4 w-[95%] md:w-[85%] mx-auto pb-20">
       <motion.div
@@ -142,10 +143,11 @@ const ViewGroceries = () => {
           type="text"
           className="w-full outline-none text-gray-700 placeholder:text-gray-400"
           placeholder="Search groceries"
+          onChange={(e)=>setSearch(e.target.value)}
         />
       </motion.form>
       <div className="space-y-4">
-        {groceries.map((grocery, idx) => (
+        {filteredData?.map((grocery, idx) => (
           <motion.div
             key={grocery?._id?.toString()}
             whileHover={{ scale: 1.01 }}

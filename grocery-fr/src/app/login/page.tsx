@@ -1,7 +1,7 @@
 "use client";
 import googleImg from "@/assests/download.jpg";
 import ForgotPassword from "@/components/ForgotPassword";
-import { Eye, EyeClosed, Leaf, Lock, LogIn, Mail } from "lucide-react";
+import { Eye, EyeClosed, Leaf, Loader2, Lock, LogIn, Mail } from "lucide-react";
 import { motion } from "motion/react";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
@@ -17,8 +17,10 @@ const Login = () => {
   });
   const [showPass, setShowPass] = useState(false);
   const [forgotPass, setForgotPass] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const handleLogin = async (e: FormEvent) => {
+    setLoading(true);
     try {
       e.preventDefault();
       const res = await signIn("credentials", {
@@ -30,9 +32,11 @@ const Login = () => {
         return toast.error("invalid credentials");
       }
       toast.success("login successful");
+      setLoading(false);
       router.push("/");
     } catch (error) {
       console.log(error, "error while login");
+      setLoading(false);
     }
   };
 
@@ -73,6 +77,7 @@ const Login = () => {
                 className="w-full border border-gray-300 rounded-xl py-3 pl-10 pr-4 text-gray-800 focus:ring-2 focus:ring-green-500 focus:outline-none"
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 value={form.email}
+                required
               />
             </div>
             <div className="relative">
@@ -83,6 +88,7 @@ const Login = () => {
                 className="w-full border border-gray-300 rounded-xl py-3 pl-10 pr-4 text-gray-800 focus:ring-2 focus:ring-green-500 focus:outline-none"
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 value={form.password}
+                required
               />
               {showPass ? (
                 <Eye
@@ -112,7 +118,14 @@ const Login = () => {
                   disabled={!formValidation}
                   className={`w-full font-semibold py-3 rounded-2xl transition-all duration-200 shadow-md inline-flex items-center justify-center gap-2 ${formValidation ? "bg-green-600 hover:bg-green-700 text-white cursor-pointer" : "bg-gray-300 text-gray-500 cursor-not-allowed"}`}
                 >
-                  Login
+                  {loading ? (
+                    <>
+                      <Loader2 className="animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    "Login"
+                  )}
                 </button>
               );
             })()}
