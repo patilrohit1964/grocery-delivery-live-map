@@ -3,7 +3,7 @@ import { IGROCERY } from "@/models/grocery.model";
 import axios from "axios";
 import {
   ArrowLeft,
-  Delete,
+  Loader2,
   Package,
   Pencil,
   Search,
@@ -14,17 +14,16 @@ import {
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { groceryCategories, units } from "../add-grocery/page";
-
 const ViewGroceries = () => {
   const [groceries, setGroceries] = useState<IGROCERY[]>([]);
   const router = useRouter();
   const [editGrocery, setEditGrocery] = useState<IGROCERY | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [backendImg, setBackendImg] = useState<string | null>(null);
-
+  const [backendImg, setBackendImg] = useState<File | null>(null);
+  const [loadingEdit, setEditLoading] = useState(false);
   useEffect(() => {
     async function getGroceries() {
       try {
@@ -43,36 +42,77 @@ const ViewGroceries = () => {
     }
     getGroceries();
   }, []);
-  const handleEditGrocery = async () => {
+
+  const handleChangeImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setBackendImg(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+  const handleEditGrocery = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!editGrocery) return;
+    setEditLoading(true);
     try {
       const formData = new FormData();
-      formData.append("_id",editGrocery._id);
-      formData.append("name",editGrocery.name);
-      formData.append("category",editGrocery?.category);
-      formData.append("price",editGrocery?.price);
-      formData.append("unit",editGrocery?.unit);
-      formData.append("image"imagePreview);
+      formData.append("_id", editGrocery._id?.toString()!);
+      formData.append("name", editGrocery.name!);
+      formData.append("category", editGrocery?.category);
+      formData.append("price", editGrocery?.price);
+      formData.append("unit", editGrocery?.unit);
+      if (backendImg) {
+        formData.append("image", backendImg);
+      }
       const { data: editRes } = await axios.put(
         "/api/admin/edit-grocery",
         formData,
       );
-      console.log(editRes, "edit res");
+      if (!editRes?.success) {
+        toast.error(editRes?.message || "erro while edit grocery");
+      }
+      console.log(editRes?.data, "res data");
+      toast.success(editRes?.message || "Grocery Update Successfully");
+      const updatedGroceries = groceries.filter((grocery) =>
+        grocery._id === editGrocery._id
+      ? { ...grocery, ...editRes?.data }
+      : grocery,
+    );
+    setGroceries(updatedGroceries);
+    setEditLoading(false);
+    setEditGrocery(null);
     } catch (error) {
       console.log(error, "error while edit grocery");
     }
-    console.log(editGrocery, "grocer value");
+  };
+  const handleDeleteGrocery = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!editGrocery) return;
+    try {
+      const { data: delRes } = await axios.post(`/api/admin/del-grocery`, {
+        id: editGrocery._id,
+      });
+      if (!delRes?.success) {
+        toast.error(delRes?.message || "error while deleting grocery");
+        setEditGrocery(null);
+        return;
+      }
+      toast.success(delRes?.message || "Grocery deleted successfully");
+      const updatedGroceries = groceries.filter(
+        (grocery) => grocery._id !== editGrocery._id,
+      );
+      setGroceries(updatedGroceries);
+      setEditGrocery(null);
+    } catch (error) {
+      console.log(error, "error while editing grocery");
+    }
   };
   useEffect(() => {
     if (editGrocery) {
       setImagePreview(editGrocery?.image);
     }
   }, [editGrocery]);
-  const handleChangeImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
+
   return (
     <div className="pt-4 w-[95%] md:w-[85%] mx-auto pb-20">
       <motion.div
@@ -112,7 +152,7 @@ const ViewGroceries = () => {
             transition={{ type: "spring", stiffness: 100 }}
             className="bg-white rounded-2xl shadow-md hover:shadow-xl border border-gray-100 flex flex-col sm:flex-row items-center sm:items-start gap-5 p-5 transition-all"
           >
-            <div className="relative w-full sm:w-44 aspect-square rounded-xl overflow-hidden border border-gray-200">
+            <div className="relative w-full sm:w-44 aspect-square rounded-xl overflow-hidden border border-gray-400">
               <Image
                 src={grocery?.image}
                 alt={grocery?.name}
@@ -174,7 +214,7 @@ const ViewGroceries = () => {
                   <X size={18} />
                 </button>
               </div>
-              <div className="relative aspect-square w-32 h-32 m-auto rounded-lg overflow-hidden mb-4 border border-gray-200 group">
+              <div className="relative aspect-square w-32 h-32 m-auto rounded-lg overflow-hidden mb-4 border border-gray-400 group">
                 {imagePreview && (
                   <Image
                     src={imagePreview}
@@ -251,15 +291,26 @@ const ViewGroceries = () => {
                   ))}
                 </select>
                 <div className="flex items-center justify-end gap-3">
-                  <button className="px-4 py-2 rounded-lg bg-red-600 text-white flex items-center gap-2 hover:bg-red-700 transition-all cursor-pointer">
+                  <button
+                    className="px-4 py-2 rounded-lg bg-red-600 text-white flex items-center gap-2 hover:bg-red-700 transition-all cursor-pointer"
+                    onClick={handleDeleteGrocery}
+                  >
                     <Trash size={18} />
                     <span>Delete Grocery</span>
                   </button>
                   <button
                     className="px-4 py-2 rounded-lg bg-green-600 text-white flex items-center gap-2 hover:bg-green-700 transition-all cursor-pointer"
                     onClick={handleEditGrocery}
+                    disabled={loadingEdit}
                   >
-                    Edit Grocery
+                    {loadingEdit ? (
+                      <span className="flex items-center gap-2">
+                        <Loader2 />
+                        Editing...
+                      </span>
+                    ) : (
+                      "Edit Grocery"
+                    )}
                   </button>
                 </div>
               </div>

@@ -10,7 +10,7 @@ const uploadOnCloudinary = async (file: Blob): Promise<string | null> => {
     return null;
   }
   try {
-    const arrayBuffer = await file.arrayBuffer();
+    const arrayBuffer = await file?.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     return new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(

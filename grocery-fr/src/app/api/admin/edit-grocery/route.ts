@@ -53,7 +53,7 @@ export async function PUT(req: NextRequest) {
         success: false,
         message: error || "something went wrong",
       },
-      { status: 201 },
+      { status: 500 },
     );
   }
 }
