@@ -1,13 +1,13 @@
 import connectDb from "@/lib/db";
+import { IGROCERY } from "@/models/grocery.model";
 import CategorySlider from "./CategorySlider";
-import HeroSection from "./HeroSection";
-import Grocery from "@/models/grocery.model";
 import GroceryItems from "./GroceryItems";
+import HeroSection from "./HeroSection";
 
-const UserDashboard = async () => {
+const UserDashboard = async ({ groceryList }: { groceryList: IGROCERY[] }) => {
   await connectDb();
-  const groceryItems = await Grocery.find().lean();
-  const plainGrocery = JSON.parse(JSON.stringify(groceryItems));
+  const plainGrocery = JSON.parse(JSON.stringify(groceryList));
+  console.log(plainGrocery,'plain grocery')
   return (
     <>
       <HeroSection />
@@ -17,9 +17,15 @@ const UserDashboard = async () => {
           Popular Grocery Items
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-          {plainGrocery?.map((groceryItem: any) => (
-            <GroceryItems key={groceryItem?._id} groceryItem={groceryItem} />
-          ))}
+          {plainGrocery.length > 0 ? (
+            plainGrocery?.map((groceryItem: any) => (
+              <GroceryItems key={groceryItem?._id} groceryItem={groceryItem} />
+            ))
+          ) : (
+            <p className="text-center text-gray-500 col-span-full">
+              No grocery items found.
+            </p>
+          )}
         </div>
       </div>
     </>

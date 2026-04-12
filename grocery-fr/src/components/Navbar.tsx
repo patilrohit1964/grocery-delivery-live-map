@@ -18,7 +18,8 @@ import { AnimatePresence, motion } from "motion/react";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -33,11 +34,13 @@ interface IUser {
 }
 const Navbar = ({ user }: { user: IUser }) => {
   const [open, setOpen] = useState(false);
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
   const { cartData } = useSelector((state: RootState) => state.cart);
   const [searchOpen, setSearchOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const profileDropDown = useRef<HTMLDivElement>(null);
+  const router = useRouter();
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -53,6 +56,16 @@ const Navbar = ({ user }: { user: IUser }) => {
     };
   }, []);
   // this createportal help us to insert element on direct dom this createportal don't have any parent they insert element direct on dom
+  const handleSearchSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    const query = search.trim().toLowerCase();
+    if (!query) {
+      return router.push("/");
+    }
+    router.push(`?q=${encodeURIComponent(query)}`);
+    setSearch("");
+    setSearchOpen(false);
+  };
   const sidebar = menuOpen
     ? createPortal(
         <AnimatePresence>
@@ -129,10 +142,10 @@ const Navbar = ({ user }: { user: IUser }) => {
             <div className="my-5 border-t border-white/20"></div>
             <button
               className="flex items-center gap-3 text-red-300 font-semibold mt-auto hover:bg-red-500/20 p-3 rounded-lg transition-all"
-              onClick={async () =>{
-                 signOut({ callbackUrl: "/" })
-                 dispatch(logoutUser())
-                }}
+              onClick={async () => {
+                signOut({ callbackUrl: "/" });
+                dispatch(logoutUser());
+              }}
             >
               <LogOut className="w-5 h-5 text-red-300" />
               Log Out
@@ -154,12 +167,17 @@ const Navbar = ({ user }: { user: IUser }) => {
 
       {/* search ui */}
       {user?.role === "user" && (
-        <form className="hidden md:flex items-center bg-white rounded-full w-1/2 px-4 py-2 max-w-lg shadow-md ">
+        <form
+          className="hidden md:flex items-center bg-white rounded-full w-1/2 px-4 py-2 max-w-lg shadow-md"
+          onSubmit={handleSearchSubmit}
+        >
           <Search className="text-gray-500 w-5 h-5 mr-2" />
           <input
             type="text"
             placeholder="Search Groceries..."
             className="w-full outline-none text-gray-700 placeholder-gray-400"
+            onChange={(e) => setSearch(e.target.value)}
+            value={search}
           />
         </form>
       )}
@@ -301,11 +319,13 @@ const Navbar = ({ user }: { user: IUser }) => {
                 className="fixed top-20 left-1/2 -translate-x-1/2 w-[90%] bg-white rounded-full shadow-lg z-40 flex items-center px-4 py-2"
               >
                 <Search className="text-gray-500 w-5 h-5 mr-2" />
-                <form className="grow">
+                <form className="grow" onSubmit={handleSearchSubmit}>
                   <input
                     type="text"
                     className="w-full outline-none text-gray-700"
                     placeholder="Search groceries..."
+                    onChange={(e) => setSearch(e.target.value)}
+                    value={search}
                   />
                 </form>
                 <button onClick={() => setSearchOpen(false)}>
