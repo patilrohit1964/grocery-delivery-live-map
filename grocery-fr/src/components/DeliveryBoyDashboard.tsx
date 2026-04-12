@@ -8,13 +8,22 @@ import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import LiveMap from "./LiveMap";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+} from "recharts";
 import DeliveryChat from "./DeliveryChat";
+import LiveMap from "./LiveMap";
 export interface ILocation {
   latitude: number;
   longitude: number;
 }
-const DeliveryBoyDashboard = () => {
+const DeliveryBoyDashboard = ({ earnings }: { earnings: number }) => {
   userGetMe();
   // loading state start
   const [otpLoading, setOtpLoading] = useState<boolean>(false);
@@ -187,6 +196,50 @@ const DeliveryBoyDashboard = () => {
       setVerifyLoading(false);
     }
   };
+
+  const todayEarning = [
+    { name: "Today's Earning", earnings, deliveries: earnings / 40 },
+  ];
+  if (!activeOrder && assignments.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-white to-green-50 p-6">
+        <div className="max-w-md w-full text-center">
+          <h2 className="text-2xl font-bold text-gray-800">
+            No Active Deliveries 🚚
+          </h2>
+          <p className="text-gray-600 mb-5">
+            You don't have any active deliveries at the moment. Stay Online for
+            new orders
+          </p>
+          <div className="bg-white border rounded-xl shadow-xl p-6">
+            <h2 className="font-medium text-green-700 mb-2">
+              Today's Performance
+            </h2>
+            <ResponsiveContainer width={"100%"} height={300}>
+              <BarChart data={todayEarning}>
+                <CartesianGrid stroke="#ccc" strokeDasharray={"5 5"} />
+                <XAxis dataKey={"day"} />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey={"earnings"} />
+                <Bar dataKey={"deliveries"} />
+              </BarChart>
+            </ResponsiveContainer>
+            <p className="mt-4 text-lg font-bold text-green-700">
+              {earnings || 0} Earned Today
+            </p>
+            <button
+              className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg cursor-pointer"
+              onClick={() => window.location.reload()}
+            >
+              Refresh Earnings
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (activeOrder && userLocation) {
     return (
       <div className="p-4 pt-30 min-h-screen bg-gray-50">
