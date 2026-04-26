@@ -7,7 +7,7 @@ import HeroSection from "./HeroSection";
 const UserDashboard = async ({ groceryList }: { groceryList: IGROCERY[] }) => {
   await connectDb();
   const plainGrocery = JSON.parse(JSON.stringify(groceryList));
-  console.log(plainGrocery,'plain grocery')
+
   return (
     <>
       <HeroSection />

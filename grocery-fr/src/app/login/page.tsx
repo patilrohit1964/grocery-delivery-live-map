@@ -115,8 +115,8 @@ const Login = () => {
               return (
                 <button
                   type="submit"
-                  disabled={!formValidation}
-                  className={`w-full font-semibold py-3 rounded-2xl transition-all duration-200 shadow-md inline-flex items-center justify-center gap-2 ${formValidation ? "bg-green-600 hover:bg-green-700 text-white cursor-pointer" : "bg-gray-300 text-gray-500 cursor-not-allowed"}`}
+                  disabled={!formValidation || loading}
+                  className={`w-full font-semibold py-3 rounded-2xl transition-all duration-200 shadow-md inline-flex items-center justify-center gap-2 ${formValidation ? "bg-green-600 hover:bg-green-700 text-white" : "bg-gray-300 text-gray-500 cursor-not-allowed"} ${loading ? "cursor-not-allowed opacity-50" : "opacity-100 cursor-pointer"}`}
                 >
                   {loading ? (
                     <>

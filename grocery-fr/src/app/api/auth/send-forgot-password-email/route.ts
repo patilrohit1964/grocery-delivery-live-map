@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
     }
-    const token = jwt.sign({_id:existingUser._id}, process.env.AUTH_SECRET!);
+    const token = jwt.sign({ _id: existingUser._id }, process.env.AUTH_SECRET!);
     sendEmail(
       "Request for forgot password click on below link",
       email,
@@ -37,5 +37,14 @@ export async function POST(req: NextRequest) {
     );
   } catch (error) {
     console.log(error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: `something went wrong ${error}`,
+      },
+      {
+        status: 500,
+      },
+    );
   }
 }
