@@ -6,13 +6,12 @@ import {
 } from "@/redux/cartSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { Minus, Plus, ShoppingCart } from "lucide-react";
-import mongoose from "mongoose";
 import { motion } from "motion/react";
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 
 interface IGroceryItem {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   name: string;
   category: string;
   price: string;
@@ -27,7 +26,7 @@ const GroceryItems = ({ groceryItem }: { groceryItem: IGroceryItem }) => {
   const handleCartData = () => {
     dispatch(addToCart({ ...groceryItem, quantity: 1 }));
   };
-  const cartItemExist = cartData.find((cart) => cart._id === groceryItem._id);
+  const cartItemExist = cartData.find((cart) => cart._id.toString() === groceryItem._id);
   return (
     <motion.div
       initial={{ opacity: 0, y: 50, scale: 0.9 }}

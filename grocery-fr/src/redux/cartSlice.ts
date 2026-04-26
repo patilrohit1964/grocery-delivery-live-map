@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import mongoose from "mongoose";
 interface IGROCERY {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   name: string;
   category: string;
   price: string;
@@ -42,10 +41,7 @@ const cartSlice = createSlice({
       state.cartData?.push(action.payload);
       cartSlice.caseReducers.calculateTotals(state);
     },
-    increaseQuantity: (
-      state,
-      action: PayloadAction<mongoose.Types.ObjectId>,
-    ) => {
+    increaseQuantity: (state, action: PayloadAction<string>) => {
       const existingItem = state.cartData?.findIndex(
         (cart) => cart?._id === action.payload,
       );
@@ -56,10 +52,7 @@ const cartSlice = createSlice({
         cartSlice.caseReducers.calculateTotals(state);
       }
     },
-    decreaseQuantity: (
-      state,
-      action: PayloadAction<mongoose.Types.ObjectId>,
-    ) => {
+    decreaseQuantity: (state, action: PayloadAction<string>) => {
       const existingItem = state.cartData?.findIndex(
         (cart) => cart?._id === action?.payload,
       );
@@ -74,7 +67,7 @@ const cartSlice = createSlice({
         cartSlice.caseReducers.calculateTotals(state);
       }
     },
-    removeFromCart: (state, action: PayloadAction<mongoose.Types.ObjectId>) => {
+    removeFromCart: (state, action: PayloadAction<string>) => {
       state.cartData = state.cartData.filter(
         (cart) => cart._id !== action.payload,
       );
@@ -100,6 +93,6 @@ export const {
   decreaseQuantity,
   removeFromCart,
   calculateTotals,
-  clearCart
+  clearCart,
 } = cartSlice.actions;
 export default cartSlice.reducer;

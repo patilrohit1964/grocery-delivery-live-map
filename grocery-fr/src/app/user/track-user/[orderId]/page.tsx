@@ -3,7 +3,6 @@
 import { useParams } from "next/navigation";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import axios from "axios";
-import mongoose from "mongoose";
 import { IUser } from "@/models/user.model";
 import { ILocation } from "@/components/DeliveryBoyDashboard";
 import { useSelector } from "react-redux";
@@ -16,11 +15,11 @@ import { IMessage } from "@/models/message.model";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "motion/react";
 interface IOrder {
-  _id?: mongoose.Types.ObjectId;
-  user: mongoose.Types.ObjectId;
+  _id?: string;
+  user: string;
   items: [
     {
-      grocery: mongoose.Types.ObjectId;
+      grocery: string;
       name: string;
       price: string;
       unit: string;
@@ -41,7 +40,7 @@ interface IOrder {
     latitude: number;
     longitude: number;
   };
-  assignment?: mongoose.Types.ObjectId;
+  assignment?: string;
   assignDeliveryBoy?: IUser;
   status: "pending" | "out of delivery" | "delivered";
   createdAt?: Date;

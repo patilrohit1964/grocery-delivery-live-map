@@ -9,7 +9,6 @@ import {
   Truck,
   UserCheck2,
 } from "lucide-react";
-import mongoose from "mongoose";
 import { motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -28,11 +27,11 @@ export const getStatusColor = (status: string) => {
   }
 };
 interface IOrder {
-  _id?: mongoose.Types.ObjectId;
-  user: mongoose.Types.ObjectId;
+  _id?: string;
+  user: string;
   items: [
     {
-      grocery: mongoose.Types.ObjectId;
+      grocery: string;
       name: string;
       price: string;
       unit: string;
@@ -53,7 +52,7 @@ interface IOrder {
     latitude: number;
     longitude: number;
   };
-  assignment?: mongoose.Types.ObjectId;
+  assignment?: string;
   assignDeliveryBoy?: IUser;
   status: "pending" | "out of delivery" | "delivered";
   createdAt?: Date;
