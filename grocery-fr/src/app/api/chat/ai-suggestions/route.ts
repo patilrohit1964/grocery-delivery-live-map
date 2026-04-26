@@ -1,0 +1,62 @@
+import connectDb from "@/lib/db";
+import { NextRequest, NextResponse } from "next/server";
+import { GoogleGenAI } from "@google/genai";
+export async function POST(req: NextRequest) {
+  try {
+    // call gemini api like this when use gemini api key
+    await connectDb();
+    const { message, role } = await req.json();
+    const prompt = `You are a professional delivery assistant chatbot.
+You will be given:
+- role: either "user" or "delivery_boy"
+- last message: the last message sent in the conversation
+Your task:
+👉 If role is "user" -> generate 3 short WhatsApp-style reply suggestions that a user could send to the delivery boy.
+👉 If role is "delivery_boy" -> generate 3 short WhatsApp-style reply suggestions that a delivery boy could send to the user.
+⚠️ Follow these rules:
+- Replies must match the context of the last message.
+- Keep replies short, human-like (max 10 words).
+- Use emojis naturally (max one per reply).
+- No generic replies like "Okay" or "Thank you".
+- Must be helpful, respectful, and relevant to delivery, status, help, or location.
+- NO numbering, NO extra instructions, NO extra text.
+- Just return comma-separated reply suggestions.
+
+Return only the three reply suggestions, comma-seperated. 
+
+Role: ${role}
+Last message: ${message}
+`;
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [{ text: prompt }],
+            },
+          ],
+        }),
+      },
+    );
+    const aiRes = await response.json();
+    // using this access gemini reply o/p
+    const aiResData = aiRes?.candidates?.[0]?.content?.parts[0]?.text
+      .split(",")
+      .map((s: string) => s.trim());
+    return NextResponse.json(
+      {
+        success: true,
+        message: "ai message",
+        aiResData,
+      },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.log(error, "error while useing gemini api");
+  }
+}

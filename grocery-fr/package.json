@@ -1,0 +1,51 @@
+{
+  "name": "grocery-delivery-live-map",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@google/genai": "^1.43.0",
+    "@headlessui/react": "^2.2.9",
+    "@reduxjs/toolkit": "^2.11.2",
+    "axios": "^1.13.2",
+    "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.9.0",
+    "jsonwebtoken": "^9.0.3",
+    "leaflet": "^1.9.4",
+    "leaflet-geosearch": "^4.2.2",
+    "lucide-react": "^0.562.0",
+    "moment": "^2.30.1",
+    "mongoose": "^9.1.4",
+    "motion": "^12.26.2",
+    "next": "^16.1.6",
+    "next-auth": "^5.0.0-beta.30",
+    "nodemailer": "^7.0.13",
+    "react": "^19.0.0-rc.1",
+    "react-dom": "^19.0.0-rc.1",
+    "react-leaflet": "^5.0.0-rc.2",
+    "react-redux": "^9.2.0",
+    "react-toastify": "^11.0.5",
+    "recharts": "^3.8.0",
+    "redux-persist": "^6.0.0",
+    "socket.io-client": "^4.8.3",
+    "stripe": "^20.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/leaflet": "^1.9.21",
+    "@types/node": "^20",
+    "@types/nodemailer": "^7.0.9",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.3",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

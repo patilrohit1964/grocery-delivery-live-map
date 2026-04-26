@@ -1,0 +1,20 @@
+@import "tailwindcss";
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* hide scroll bar for ie,edge and firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* hide scroll bar for ie,edge */
+  scrollbar-width: none; /* hide scroll bar for firefox */
+}
+.message-scroll::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+  background-color:#ddd;
+}
+.message-scroll::-webkit-scrollbar-thumb {
+  width: 4px;
+  height: 4px;
+  background-color:#696969;
+}
