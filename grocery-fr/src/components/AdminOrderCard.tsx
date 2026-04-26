@@ -11,7 +11,6 @@ import {
   User,
   UserCheck2,
 } from "lucide-react";
-import mongoose from "mongoose";
 import { motion } from "motion/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -21,11 +20,11 @@ import { getSocket } from "@/lib/socket";
 
 const statusOptions = ["pending", "out of delivery"];
 interface IOrder {
-  _id?: mongoose.Types.ObjectId;
-  user: mongoose.Types.ObjectId;
+  _id?: string;
+  user: string;
   items: [
     {
-      grocery: mongoose.Types.ObjectId;
+      grocery: string;
       name: string;
       price: string;
       unit: string;
@@ -46,7 +45,7 @@ interface IOrder {
     latitude: number;
     longitude: number;
   };
-  assignment?: mongoose.Types.ObjectId;
+  assignment?: string;
   assignDeliveryBoy?: IUser;
   status: "pending" | "out of delivery" | "delivered";
   createdAt?: Date;

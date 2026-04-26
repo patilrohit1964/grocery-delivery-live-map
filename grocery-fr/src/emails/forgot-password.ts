@@ -1,4 +1,4 @@
-const forgotPasswordEmailTemplate = (resetLink) => {
+const forgotPasswordEmailTemplate = (resetLink:any) => {
   return `
 <!DOCTYPE html>
 <html lang="en">

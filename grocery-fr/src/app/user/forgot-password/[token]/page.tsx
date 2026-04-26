@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { FormEvent, use, useState } from "react";
 import { toast } from "react-toastify";
 
-function ForgotPassword({ params }: { params: string }) {
+function ForgotPassword({ params }: { params: Promise<{ token: string }> }) {
   const { token } = use(params);
   const [showPass, setShowPass] = useState(false);
   const router = useRouter();
