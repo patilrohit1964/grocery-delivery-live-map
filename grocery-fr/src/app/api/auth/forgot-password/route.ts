@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     await connectDb();
     const { password, token } = await req.json();
     const decoded = jwt.verify(token, process.env.AUTH_SECRET!);
-    const user = await User.findById(decoded?._id!);
+    const user = await User.findById(decoded._id! as string);
     if (!user) {
       return NextResponse.json(
         {
