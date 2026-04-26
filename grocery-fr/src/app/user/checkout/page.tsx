@@ -1,9 +1,8 @@
 "use client";
+import dynamic from "next/dynamic";
 import { clearCart } from "@/redux/cartSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import axios from "axios";
-import L, { LatLngExpression } from "leaflet";
-import { OpenStreetMapProvider } from "leaflet-geosearch";
 import {
   ArrowLeft,
   Building,
@@ -21,16 +20,13 @@ import {
 import { motion } from "motion/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-
-const marker = new L.Icon({
-  iconUrl: "https://cdn-icons-png.flaticon.com/128/684/684908.png",
-  iconSize: [30, 30],
-  iconAnchor: [15, 30],
-}); //we can set icon as we want
+// dynamic import for checkout map because leaflet map not support server side rendering
+const CheckoutMap = dynamic(() => import("@/components/CheckoutMap"), {
+  ssr: false,
+});
 const Checkout = () => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
@@ -74,30 +70,6 @@ const Checkout = () => {
     }
   }, [userData]);
 
-  // for marker animate if we drag marker then animate map with that marker
-  const DraggableMarker: React.FC = () => {
-    const map = useMap();
-    useEffect(() => {
-      map.setView(position as LatLngExpression);
-    }, [position]);
-    return (
-      <Marker
-        position={position as LatLngExpression}
-        icon={marker}
-        draggable={true}
-        eventHandlers={{
-          dragend: (e: L.LeafletEvent) => {
-            const dragMarker = e.target as L.Marker;
-            const { lat, lng } = dragMarker.getLatLng();
-            setPosition([lat, lng]);
-          },
-        }}
-      >
-        <Popup>You are here</Popup>
-      </Marker>
-    );
-  };
-
   useEffect(() => {
     const getLatLngFromAddress = async () => {
       if (!position) return null;
@@ -122,6 +94,7 @@ const Checkout = () => {
   // for location searching
   const handleSearchQuery = async () => {
     setMapSearchLoading(true);
+    const { OpenStreetMapProvider } = await import("leaflet-geosearch");
     const provider = new OpenStreetMapProvider();
     const results = await provider.search({ query: searchQuery });
     console.log(results, "resutls");
@@ -366,19 +339,7 @@ const Checkout = () => {
             {/* map div */}
             <div className="relative mt-6 h-82.5 rounded-xl overflow-hidden border border-gray-200 shadow-inner">
               {position && (
-                // using this we import and use leaflet map in our project and set position of marker according to user location
-                <MapContainer
-                  center={position as LatLngExpression}
-                  zoom={13}
-                  scrollWheelZoom={false}
-                  className="w-full h-full"
-                >
-                  <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  />
-                  <DraggableMarker />
-                </MapContainer>
+                <CheckoutMap position={position} setPosition={setPosition} />
               )}
               <motion.button
                 whileTap={{ scale: 0.97 }}

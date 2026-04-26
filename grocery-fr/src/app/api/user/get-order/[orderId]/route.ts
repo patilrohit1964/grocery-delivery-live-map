@@ -3,10 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { orderId: string } },
+  context: { params: Promise<{ orderId: string }> },
 ) {
   try {
-    const { orderId } = await params;
+    const { orderId } = await context.params;
     const order = await Order.findById(orderId).populate(
       "assignDeliveryBoy",
       "name email mobile image location",
